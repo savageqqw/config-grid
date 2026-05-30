@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GRID Config</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    html, body { height: 100%; overflow: hidden; margin: 0; }
+    #shell { display: flex; flex-direction: column; height: 100vh; }
+    #page-frame { flex: 1; border: none; width: 100%; background: #f8f8f6; }
+    .nav-btn {
+      background: transparent; border: 1px solid transparent;
+      color: #8a8a85; padding: 6px 16px; border-radius: 6px;
+      font-size: 13px; font-family: 'Inter', sans-serif;
+      font-weight: 500; cursor: pointer; transition: all .2s;
+      position: relative;
+    }
+    .nav-btn.active { background: rgba(232,93,4,.1); border-color: rgba(232,93,4,.3); color: #e85d04; }
+    .nav-btn:hover:not(.active) { color: #e85d04; }
+    .nav-dot { position: absolute; top: -2px; right: -2px; width: 7px; height: 7px; border-radius: 50%; background: #e85d04; }
+  </style>
+</head>
+<body>
+  <div id="shell-wrap" style="display:flex;flex-direction:column;height:100vh">
+    <!-- NAVBAR -->
+    <div id="navbar-app">
+      <nav class="navbar" id="navbar">
+        <div class="navbar-inner">
+          <!-- Лого -->
+          <div class="navbar-logo" @click="navigate('index')" style="cursor:pointer">
+            <div style="width:36px;height:36px;background:#111110;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;position:relative">
+              <img v-if="logoImg" :src="logoImg" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/>
+              <span v-else>⚙️</span>
+              <input type="file" accept="image/*" @change="uploadLogo" title="Натисни щоб завантажити логотип"
+                style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%"/>
+            </div>
+            <div>
+              <div class="navbar-logo-name">GRID Config</div>
+            </div>
+          </div>
+
+          <!-- Посилання -->
+          <div class="navbar-links">
+            <button v-for="p in pages" :key="p.key"
+              class="nav-btn" :class="{ active: activePage === p.key }"
+              @click="navigate(p.key)">
+              {{ p.label }}
+              <span v-if="p.key === 'mybuilds' && buildsCount > 0" class="nav-dot"></span>
+            </button>
+          </div>
+
+          <!-- Права частина -->
+          <div style="display:flex;align-items:center;gap:10px">
+
+            <!-- Юзер -->
+            <template v-if="user">
+              <button v-if="user.isAdmin" @click="navigate('admin')"
+                style="display:flex;align-items:center;gap:5px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#f59e0b;padding:5px 12px;border-radius:7px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer">
+                Керування ⚙️
+              </button>
+              <div style="display:flex;align-items:center;gap:8px;background:#f2f2f0;border:1px solid #e4e4e0;border-radius:8px;padding:5px 12px">
+                <div style="width:26px;height:26px;border-radius:50%;background:#111110;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#000">
+                  {{ user.name.charAt(0).toUpperCase() }}
+                </div>
+                <span style="font-size:12px;color:#111110;font-family:'Inter',sans-serif;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ user.name }}</span>
+              </div>
+              <button @click="logout"
+                style="background:#fff0f0;border:1px solid #fecaca;color:#dc2626;padding:5px 12px;border-radius:7px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer">
+                Вийти
+              </button>
+            </template>
+            <template v-else>
+              <button @click="navigate('auth')"
+                style="background:#111110;border:none;color:#fff;padding:7px 18px;border-radius:8px;font-size:13px;font-weight:800;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:.03em">
+                Увійти
+              </button>
+            </template>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <!-- IFRAME -->
+    <iframe id="page-frame" src="index.html"></iframe>
+</div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="components.js"></script>
+  <script src="pcforge-store.js"></script>
+  <script>
+  const { createApp, ref, computed, onMounted, watch } = Vue;
+
+  const PAGES = [
+    { key: 'index',        label: 'Головна',        file: 'index.html' },
+    { key: 'configurator', label: 'Конфігуратор',   file: 'configurator.html' },
+    { key: 'catalog',      label: 'Каталог збірок', file: 'catalog.html' },
+    { key: 'mybuilds',     label: 'Мої збірки',     file: 'mybuilds.html' },
+    { key: 'compare',      label: 'Порівняння',      file: 'compare.html' },
+  ];
+  const SPECIAL = [
+    { key: 'auth',  file: 'auth.html' },
+    { key: 'admin', file: 'admin.html' },
+  ];
+  const ALL_PAGES = [...PAGES, ...SPECIAL];
+
+  createApp({
+    setup() {
+      const activePage  = ref('index');
+      const currentFile = ref('index.html');
+      const logoImg     = ref(localStorage.getItem('grid_logo') || '');
+
+      function uploadLogo(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          logoImg.value = ev.target.result;
+          localStorage.setItem('grid_logo', ev.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+
+      const user        = ref(PCForgeStore.user);
+      const buildsCount = computed(() => PCForgeStore.builds.length);
+
+      function refreshUser() { user.value = PCForgeStore.user; }
+
+      function navigate(key, file) {
+        const page = ALL_PAGES.find(p => p.key === key);
+        const f    = file || page?.file;
+        if (!f) return;
+        activePage.value  = key;
+        currentFile.value = f;
+        history.pushState({ key, file: f }, '', '#' + key);
+        updateFrame(f);
+      }
+
+      function updateFrame(file) {
+        const frame = document.getElementById('page-frame');
+        if (frame) frame.src = file;
+      }
+
+      function logout() {
+        PCForgeStore.clearUser();
+        refreshUser();
+        navigate('index');
+      }
+
+      // Перехоплення кліків всередині iframe
+      function setupFrameListeners() {
+        const frame = document.getElementById('page-frame');
+        if (!frame) return;
+
+        frame.addEventListener('load', () => {
+          try {
+            const iDoc = frame.contentDocument;
+            // Ховаємо внутрішній navbar і orbs
+            const nav  = iDoc.getElementById('navbar-app') || iDoc.querySelector('nav');
+            const orbs = iDoc.querySelector('.glow-orbs');
+            if (orbs) orbs.style.display = 'none';
+
+            // Перехоплюємо <a> посилання
+            iDoc.addEventListener('click', e => {
+              const a = e.target.closest('a[href]');
+              if (!a) return;
+              const href = a.getAttribute('href');
+              if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto')) return;
+              const page = ALL_PAGES.find(p => href === p.file || href.startsWith(p.file + '?'));
+              if (!page) return;
+              e.preventDefault();
+              navigate(page.key, href);
+            }, false);
+
+            // Scroll effect
+            frame.contentWindow.addEventListener('scroll', () => {
+              document.getElementById('navbar')?.classList.toggle('scrolled', frame.contentWindow.scrollY > 20);
+            });
+
+          } catch { }
+
+          // Синхронізуємо currentFile з реальним src iframe (після редіректу auth)
+          const realSrc = frame.contentWindow.location.href.split('/').pop().split('?')[0];
+          if (realSrc && realSrc !== currentFile.value) {
+            currentFile.value = realSrc;
+          }
+          // Оновлюємо user та activePage
+          refreshUser();
+          const matched = ALL_PAGES.find(p => currentFile.value === p.file || currentFile.value.startsWith(p.file + '?'));
+          if (matched) activePage.value = matched.key;
+        });
+      }
+
+      // History API
+      window.addEventListener('popstate', e => {
+        const key  = e.state?.key  || 'index';
+        const file = e.state?.file || 'index.html';
+        activePage.value  = key;
+        currentFile.value = file;
+      });
+
+      // Повідомлення від iframe (логін/логаут)
+      window.addEventListener('message', e => {
+        if (e.data?.type === 'auth-change') {
+          if (e.data.user) PCForgeStore.saveUser(e.data.user);
+          else PCForgeStore.clearUser();
+          refreshUser();
+        }
+        if (e.data?.type === 'navigate') navigate(e.data.key, e.data.file);
+      });
+
+      // Слухаємо storage event (якщо змінився в іншій вкладці)
+      window.addEventListener('storage', e => {
+        if (e.key === 'pcforge_user') refreshUser();
+      });
+
+      // Polling — перевіряємо user кожні 150мс коли активна auth сторінка
+      setInterval(() => {
+        if (currentFile.value === 'auth.html') {
+          const fresh = PCForgeStore.user;
+          if (JSON.stringify(fresh) !== JSON.stringify(user.value)) {
+            refreshUser();
+          }
+        }
+      }, 150);
+
+      onMounted(async () => {
+        // Стартова сторінка
+        const hash = location.hash.replace('#', '');
+        const start = ALL_PAGES.find(p => p.key === hash) || PAGES[0];
+        activePage.value  = start.key;
+        currentFile.value = start.file;
+        history.replaceState({ key: start.key, file: start.file }, '', '#' + start.key);
+
+        // Встановлюємо src iframe одразу через JS
+        const frame = document.getElementById('page-frame');
+        if (frame && start.file !== 'index.html') frame.src = start.file;
+
+        setupFrameListeners();
+
+        // Завантажуємо компоненти
+      });
+
+      return { pages: PAGES, activePage, currentFile, user, buildsCount, logoImg, uploadLogo, refreshUser, navigate, logout };
+    }
+  }).mount('#shell-wrap');
+  </script>
+</body>
+</html>

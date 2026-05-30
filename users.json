@@ -1,0 +1,10 @@
+[
+  {
+    "id": "48750ae6-ce60-48ac-a418-96bf866ca69e",
+    "name": "Admin",
+    "email": "admin@pcforge.local",
+    "password": "569900f3332b41743db28f1df598e861e7c12b67aa4cfffdde0d437ac87415f4",
+    "isAdmin": true,
+    "createdAt": "2026-05-27T20:56:33.603Z"
+  }
+]

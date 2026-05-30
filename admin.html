@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GRID Config — Адмін</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    body.in-iframe .glow-orbs { display: none !important; }
+    body.in-iframe #navbar-app { display: none !important; }
+    .adm-input { width:100%; padding:9px 12px; background:#ececea; border:1px solid #e0e0dc; border-radius:8px; font-size:13px; color:#111110; font-family:'Inter',sans-serif; outline:none; box-sizing:border-box; transition:border .2s; }
+    .adm-input:focus { border-color:rgba(232,93,4,.45); }
+    select.adm-input option { background:#ffffff; }
+    .comp-row { display:grid; gap:8px; align-items:center; padding:10px 16px; border-bottom:1px solid #f2f2f0; transition:background .15s; }
+    .comp-row:hover { background:#f5f5f3; }
+  </style>
+</head>
+<body>
+  <div id="navbar-app"></div>
+
+  <div id="app" style="position:relative;z-index:1">
+
+  <!-- Немає доступу -->
+  <div v-if="!isAdmin" style="min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;text-align:center;padding:24px">
+    <div style="font-size:64px">🚫</div>
+    <h2 style="font-family:'Space Grotesk',sans-serif;color:#ef4444">Доступ заборонено</h2>
+    <p style="color:#8a8a85">Ця сторінка лише для адміністраторів.</p>
+    <a href="index.html" style="color:#e85d04">← На головну</a>
+  </div>
+
+  <div v-else style="max-width:1300px;margin:0 auto;padding:32px 24px">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:16px">
+      <div>
+        <div style="display:inline-flex;padding:4px 14px;border-radius:3px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#f59e0b;font-size:10px;letter-spacing:.06em;font-weight:700;font-family:'Space Grotesk',sans-serif;margin-bottom:10px">👑 АДМІН</div>
+        <h1 style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:900;color:#111110">Панель керування</h1>
+        <p style="color:#aaaaaa;font-size:13px;margin-top:4px">Вітаємо, <strong style="color:#e85d04">{{ user.name }}</strong></p>
+      </div>
+      <a href="index.html" style="background:#ececea;border:1px solid #e0e0dc;color:#8a8a85;padding:9px 18px;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;text-decoration:none">← На сайт</a>
+    </div>
+
+    <!-- Статистика -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px">
+      <div v-for="s in stats" :key="s.label" style="background:#f2f2f0;border:1px solid #e8e8e4;border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:24px;margin-bottom:6px">{{ s.icon }}</div>
+        <div :style="{ color: s.color }" style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:900">{{ s.val }}</div>
+        <div style="font-size:11px;color:#aaaaaa;margin-top:4px">{{ s.label }}</div>
+      </div>
+    </div>
+
+    <!-- Таби -->
+    <div style="display:flex;gap:8px;margin-bottom:22px">
+      <button @click="activeTab = 'components'"
+        :style="{ background: activeTab==='components' ? 'rgba(232,93,4,.1)' : 'transparent', borderColor: activeTab==='components' ? 'rgba(232,93,4,.3)' : '#e8e8e4', color: activeTab==='components' ? '#e85d04' : '#8a8a85' }"
+        style="padding:8px 20px;border-radius:8px;border:1px solid;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s">
+        🔧 Компоненти
+      </button>
+      <button @click="activeTab = 'users'; loadUsers()"
+        :style="{ background: activeTab==='users' ? 'rgba(232,93,4,.1)' : 'transparent', borderColor: activeTab==='users' ? 'rgba(232,93,4,.3)' : '#e8e8e4', color: activeTab==='users' ? '#e85d04' : '#8a8a85' }"
+        style="padding:8px 20px;border-radius:8px;border:1px solid;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s">
+        👥 Користувачі
+      </button>
+    </div>
+
+    <!-- КОМПОНЕНТИ -->
+    <template v-if="activeTab === 'components'">
+      <div style="background:#f5f5f3;border:1px solid #e8e8e4;border-radius:16px;overflow:hidden">
+        <!-- Тулбар -->
+        <div style="padding:14px 18px;border-bottom:1px solid #ececea;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;flex:1">
+            <button v-for="(catObj, catKey) in CD" :key="catKey" @click="activeCat = catKey; search = ''"
+              :style="{ background: activeCat===catKey ? catObj.accent+'20' : 'transparent', border: `1px solid ${activeCat===catKey ? catObj.accent+'55' : '#e0e0dc'}`, color: activeCat===catKey ? catObj.accent : '#8a8a85' }"
+              style="padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.05em;transition:all .2s">
+              {{ catObj.icon }} {{ catObj.short }}
+            </button>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+            <input v-model="search" class="adm-input" style="width:180px" placeholder="🔍 Пошук..."/>
+            <button @click="openAddModal" style="background:#111110;border:none;color:#fff;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap">+ Додати</button>
+          </div>
+        </div>
+        <!-- Таблиця -->
+        <div>
+          <div class="comp-row" style="grid-template-columns:2fr 1fr 1fr 90px 110px;background:rgba(232,93,4,.03);border-bottom:1px solid rgba(232,93,4,.1)">
+            <span style="font-size:10px;color:#c0c0bc;font-family:'Space Grotesk',sans-serif;letter-spacing:.04em">НАЗВА</span>
+            <span style="font-size:10px;color:#c0c0bc;font-family:'Space Grotesk',sans-serif;letter-spacing:.04em">БРЕНД</span>
+            <span style="font-size:10px;color:#c0c0bc;font-family:'Space Grotesk',sans-serif;letter-spacing:.04em">ЦІНА</span>
+            <span style="font-size:10px;color:#c0c0bc;font-family:'Space Grotesk',sans-serif;letter-spacing:.04em">КЛАС</span>
+            <span style="font-size:10px;color:#c0c0bc;font-family:'Space Grotesk',sans-serif;letter-spacing:.04em">ДІЇ</span>
+          </div>
+          <div v-if="filteredItems.length === 0" style="padding:48px;text-align:center;color:#c0c0bc">
+            <div style="font-size:40px;margin-bottom:14px">🔍</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:13px">Нічого не знайдено</div>
+          </div>
+          <div v-for="item in filteredItems" :key="item.id" class="comp-row" style="grid-template-columns:2fr 1fr 1fr 90px 110px">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:#111110">{{ item.name }}</div>
+              <div v-if="item.desc" style="font-size:11px;color:#aaaaaa;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:320px">{{ item.desc }}</div>
+            </div>
+            <div style="font-size:12px;color:#8a8a85">{{ item.brand || '—' }}</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;color:#e85d04">{{ fmt(item.price) }}</div>
+            <div>
+              <span :style="{ background: tierColor(item.tier)+'22', border: `1px solid ${tierColor(item.tier)}55`, color: tierColor(item.tier) }"
+                style="display:inline-flex;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;font-family:'Space Grotesk',sans-serif">
+                {{ TIER_UA[item.tier] || item.tier }}
+              </span>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button @click="openEditModal(item)" style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:#fbbf24;padding:7px 10px;border-radius:7px;font-size:12px;cursor:pointer">✏️</button>
+              <button @click="deleteItem(item)" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#dc2626;padding:7px 10px;border-radius:7px;font-size:12px;cursor:pointer">🗑</button>
+            </div>
+          </div>
+        </div>
+        <div style="padding:10px 18px;border-top:1px solid #ececea;font-size:11px;color:#c0c0bc">
+          Показано <strong style="color:#aaaaaa">{{ filteredItems.length }}</strong> з <strong style="color:#aaaaaa">{{ CD[activeCat]?.items?.length || 0 }}</strong> · {{ CD[activeCat]?.label }}
+        </div>
+      </div>
+    </template>
+
+    <!-- КОРИСТУВАЧІ -->
+    <template v-else>
+      <div style="background:#f5f5f3;border:1px solid #e8e8e4;border-radius:16px;overflow:hidden">
+        <div style="padding:14px 18px;border-bottom:1px solid #ececea;display:flex;align-items:center;justify-content:space-between">
+          <span style="font-family:'Space Grotesk',sans-serif;font-size:11px;color:#c0c0bc;letter-spacing:.05em">СПИСОК КОРИСТУВАЧІВ</span>
+          <button @click="loadUsers" style="background:rgba(232,93,4,.1);border:1px solid rgba(232,93,4,.3);color:#e85d04;padding:5px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif">⟳ Оновити</button>
+        </div>
+        <div v-if="users.length === 0" style="padding:48px;text-align:center;color:#c0c0bc">
+          <div style="font-size:40px;margin-bottom:14px">👥</div>
+          <div>Натисніть «Оновити» для завантаження</div>
+        </div>
+        <div v-else>
+          <div class="comp-row" style="grid-template-columns:2fr 2fr 100px 120px;background:rgba(232,93,4,.03);border-bottom:1px solid rgba(232,93,4,.1)">
+            <span style="font-size:10px;color:#c0c0bc;font-family:'Space Grotesk',sans-serif;letter-spacing:.04em">ІМ'Я</span>
+            <span style="font-size:10px;color:#c0c0bc;font-family:'Space Grotesk',sans-serif;letter-spacing:.04em">EMAIL</span>
+            <span style="font-size:10px;color:#c0c0bc;font-family:'Space Grotesk',sans-serif;letter-spacing:.04em">РОЛЬ</span>
+            <span style="font-size:10px;color:#c0c0bc;font-family:'Space Grotesk',sans-serif;letter-spacing:.04em">РЕЄСТРАЦІЯ</span>
+          </div>
+          <div v-for="u in users" :key="u.id" class="comp-row" style="grid-template-columns:2fr 2fr 100px 120px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div :style="{ background: u.isAdmin ? 'linear-gradient(135deg,#f59e0b,#d97706)' : 'linear-gradient(135deg,#e85d04,#c2410c)' }"
+                style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;flex-shrink:0">
+                {{ u.name.charAt(0).toUpperCase() }}
+              </div>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:#111110">{{ u.name }}</div>
+                <div v-if="u.id === user.id" style="font-size:10px;color:#e85d04">це ви</div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:#8a8a85">{{ u.email }}</div>
+            <div>
+              <span v-if="u.isAdmin" style="display:inline-flex;padding:2px 8px;border-radius:3px;background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.4);color:#f59e0b;font-size:10px;font-weight:700;font-family:'Space Grotesk',sans-serif">👑 АДМІН</span>
+              <span v-else style="display:inline-flex;padding:2px 8px;border-radius:3px;background:rgba(71,85,105,.2);border:1px solid rgba(71,85,105,.4);color:#aaaaaa;font-size:10px;font-weight:700;font-family:'Space Grotesk',sans-serif">USER</span>
+            </div>
+            <div style="font-size:11px;color:#aaaaaa">{{ u.createdAt ? new Date(u.createdAt).toLocaleDateString('uk-UA') : '—' }}</div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- MODAL -->
+    <div v-if="modal.open" @click.self="modal.open = false"
+      style="position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);z-index:3000;display:flex;align-items:center;justify-content:center;padding:16px">
+      <div style="background:#0a0a14;border:1px solid rgba(232,93,4,.25);border-radius:20px;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;position:relative">
+        <div :style="{ background: modal.editItem ? (CD[activeCat]?.accent || '#e85d04') + ',#111110' : 'linear-gradient(90deg,#e85d04,#111110)' }" style="height:3px;border-radius:20px 20px 0 0"></div>
+        <div style="padding:24px 28px">
+          <!-- Заголовок -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px">
+            <div>
+              <div style="font-size:11px;color:#aaaaaa;font-family:'Space Grotesk',sans-serif;letter-spacing:.04em;margin-bottom:4px">{{ modal.editItem ? 'РЕДАГУВАННЯ' : 'НОВИЙ КОМПОНЕНТ' }}</div>
+              <h3 style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:900;color:#111110">{{ modal.editItem ? '✏️ ' + modal.editItem.name : '+ Додати до бази' }}</h3>
+            </div>
+            <button @click="modal.open = false" style="background:#ececea;border:1px solid #e0e0dc;color:#8a8a85;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:15px">✕</button>
+          </div>
+
+          <!-- Вибір категорії (тільки при додаванні) -->
+          <div v-if="!modal.editItem" style="margin-bottom:22px">
+            <div style="font-size:10px;color:#8a8a85;letter-spacing:.11em;font-family:'Space Grotesk',sans-serif;margin-bottom:10px">КАТЕГОРІЯ <span style="color:#ef4444">*</span></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button v-for="(catObj, catKey) in CD" :key="catKey" @click="modal.cat = catKey"
+                :style="{ background: modal.cat===catKey ? catObj.accent+'25' : '#f2f2f0', border: `1px solid ${modal.cat===catKey ? catObj.accent : '#e0e0dc'}`, color: modal.cat===catKey ? catObj.accent : '#8a8a85' }"
+                style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;font-family:'Space Grotesk',sans-serif;letter-spacing:.06em;cursor:pointer;transition:all .2s">
+                {{ catObj.icon }} {{ catObj.short }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Поля -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div v-for="f in currentFields" :key="f.k" :style="{ gridColumn: f.k==='desc' ? '1/-1' : '1' }">
+              <label style="display:block;font-size:10px;color:#8a8a85;letter-spacing:.04em;font-family:'Space Grotesk',sans-serif;margin-bottom:6px">
+                {{ f.l }}<span v-if="f.r" style="color:#ef4444"> *</span>
+              </label>
+              <select v-if="f.sel" v-model="modal.form[f.k]" class="adm-input">
+                <option v-for="o in f.sel" :key="o" :value="o">{{ o }}</option>
+              </select>
+              <textarea v-else-if="f.k==='desc'" v-model="modal.form[f.k]" class="adm-input" rows="2" :placeholder="f.l" style="resize:vertical"></textarea>
+              <div v-else-if="f.t==='price'" style="position:relative">
+                <input v-model="modal.form[f.k]" type="text" :placeholder="f.l + ' (напр: 5000 або ~5000)'" class="adm-input" style="padding-left:28px"
+                  @input="val => { let v=modal.form[f.k]; modal.form[f.k]=v.replace(/[^0-9~.,]/g,'').replace(/~(?=.*~)/g,''); }"/>
+                <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#8a8a85;font-size:14px;pointer-events:none">₴</span>
+              </div>
+              <input v-else v-model="modal.form[f.k]" :type="f.t||'text'" :placeholder="f.l" class="adm-input"/>
+            </div>
+          </div>
+
+          <!-- Картинка URL -->
+          <div style="margin:16px 0">
+            <label style="display:block;font-size:10px;color:#8a8a85;letter-spacing:.04em;font-family:'Space Grotesk',sans-serif;margin-bottom:6px">ЗОБРАЖЕННЯ (URL)</label>
+            <input v-model="modal.form.img" type="url" placeholder="https://..." class="adm-input" @input="previewImg = modal.form.img"/>
+            <div v-if="previewImg && previewImg.startsWith('http')" style="margin-top:10px;text-align:center">
+              <img :src="previewImg" style="max-height:120px;max-width:100%;object-fit:contain;border-radius:8px;background:#ececea;padding:8px" @error="previewImg=''"/>
+            </div>
+            <div style="font-size:11px;color:#c0c0bc;margin-top:5px">Або завантажте файл:</div>
+            <input type="file" accept="image/*" @change="loadImgFile" style="font-size:12px;color:#8a8a85;margin-top:4px;cursor:pointer"/>
+          </div>
+
+          <div v-if="modal.err" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 14px;font-size:12px;color:#dc2626;margin-bottom:14px">{{ modal.err }}</div>
+
+          <div style="display:flex;gap:10px;margin-top:6px">
+            <button @click="modal.open = false" style="background:#ececea;border:1px solid #e0e0dc;color:#8a8a85;padding:11px 20px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif">Скасувати</button>
+            <button @click="submitForm" style="flex:1;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:#22c55e;padding:11px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
+              {{ modal.editItem ? '💾 Зберегти зміни' : '💾 Зберегти компонент' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div> <!-- #app -->
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="components.js"></script>
+  <script src="pcforge-store.js"></script>
+  <script>
+  const { createApp, ref, reactive, computed, onMounted } = Vue;
+
+  const FIELD_DEFS = {
+    cpu:        [{k:'name',l:'Назва',r:1},{k:'brand',l:'Бренд',r:1},{k:'price',l:'Ціна ₴ (або ~ціна)',t:'price',r:1},{k:'tier',l:'Клас',sel:['ultra','high','mid','budget'],r:1},{k:'socket',l:'Сокет',sel:['AM5','AM4','LGA1851','LGA1700','LGA1200'],r:1},{k:'cores',l:'Ядра',t:'number'},{k:'threads',l:'Потоки',t:'number'},{k:'boost',l:'Boost Clock'},{k:'tdp',l:'TDP (W)',t:'number'},{k:'perf',l:'Продуктивність (0–100)',t:'number'},{k:'desc',l:'Опис'}],
+    gpu:        [{k:'name',l:'Назва',r:1},{k:'brand',l:'Бренд',sel:['NVIDIA','AMD','Intel'],r:1},{k:'price',l:'Ціна ₴ (або ~ціна)',t:'price',r:1},{k:'tier',l:'Клас',sel:['ultra','high','mid','budget'],r:1},{k:'vram',l:'VRAM'},{k:'tdp',l:'TDP (W)',t:'number'},{k:'perf',l:'Продуктивність',t:'number'},{k:'desc',l:'Опис'}],
+    ram:        [{k:'name',l:'Назва',r:1},{k:'brand',l:'Бренд',r:1},{k:'price',l:'Ціна ₴ (або ~ціна)',t:'price',r:1},{k:'tier',l:'Клас',sel:['ultra','high','mid','budget'],r:1},{k:'ram_type',l:'Тип',sel:['DDR5','DDR4']},{k:'capacity',l:"Об'єм"},{k:'speed',l:'Частота'},{k:'cl',l:'Таймінги'},{k:'desc',l:'Опис'}],
+    motherboard:[{k:'name',l:'Назва',r:1},{k:'brand',l:'Бренд',sel:['ASUS','MSI','Gigabyte','ASRock'],r:1},{k:'price',l:'Ціна ₴ (або ~ціна)',t:'price',r:1},{k:'tier',l:'Клас',sel:['ultra','high','mid','budget'],r:1},{k:'socket',l:'Сокет',sel:['AM5','AM4','LGA1851','LGA1700','LGA1200'],r:1},{k:'chipset',l:'Чіпсет'},{k:'ram_type',l:'Тип RAM',sel:['DDR5','DDR4']},{k:'desc',l:'Опис'}],
+    storage:    [{k:'name',l:'Назва',r:1},{k:'brand',l:'Бренд',r:1},{k:'price',l:'Ціна ₴ (або ~ціна)',t:'price',r:1},{k:'tier',l:'Клас',sel:['ultra','high','mid','budget'],r:1},{k:'type',l:'Інтерфейс',sel:['NVMe M.2','SATA 2.5"']},{k:'capacity',l:"Об'єм"},{k:'read',l:'Читання'},{k:'desc',l:'Опис'}],
+    psu:        [{k:'name',l:'Назва',r:1},{k:'brand',l:'Бренд',r:1},{k:'price',l:'Ціна ₴ (або ~ціна)',t:'price',r:1},{k:'tier',l:'Клас',sel:['ultra','high','mid','budget'],r:1},{k:'wattage',l:'Потужність (W)',t:'number',r:1},{k:'rating',l:'Сертифікат',sel:['80+ Titanium','80+ Platinum','80+ Gold','80+ Bronze']},{k:'desc',l:'Опис'}],
+    case:       [{k:'name',l:'Назва',r:1},{k:'brand',l:'Бренд',r:1},{k:'price',l:'Ціна ₴ (або ~ціна)',t:'price',r:1},{k:'tier',l:'Клас',sel:['ultra','high','mid','budget'],r:1},{k:'formFactor',l:'Форм-фактор',sel:['Full Tower','Mid Tower']},{k:'desc',l:'Опис'}],
+    cooling:    [{k:'name',l:'Назва',r:1},{k:'brand',l:'Бренд',r:1},{k:'price',l:'Ціна ₴ (або ~ціна)',t:'price',r:1},{k:'tier',l:'Клас',sel:['ultra','high','mid','budget'],r:1},{k:'type',l:'Тип охолодження'},{k:'desc',l:'Опис'}],
+  };
+
+  createApp({
+    setup() {
+      const user    = PCForgeStore.user;
+      const isAdmin = user?.isAdmin === true;
+      const CD      = computed(() => PCForgeStore.CD);
+
+      const activeTab = ref('components');
+      const activeCat = ref('cpu');
+      const search    = ref('');
+      const users     = ref([]);
+      const previewImg = ref('');
+
+      const modal = reactive({ open:false, editItem:null, cat:'cpu', form:{}, err:'' });
+
+      const filteredItems = computed(() => (CD.value[activeCat.value]?.items || []).filter(i =>
+        i.name.toLowerCase().includes(search.value.toLowerCase()) ||
+        (i.brand||'').toLowerCase().includes(search.value.toLowerCase())
+      ));
+
+      const currentFields = computed(() => FIELD_DEFS[modal.editItem ? activeCat.value : modal.cat] || []);
+
+      const totalComps = computed(() => Object.values(CD.value).reduce((s,c) => s + (c.items?.length||0), 0));
+      const stats = computed(() => [
+        { val: totalComps.value, label:'Компонентів',   color:'#e85d04', icon:'🔧' },
+        { val: Object.keys(CD.value).length, label:'Категорій', color:'#8a8a85', icon:'📦' },
+        { val: users.value.length,           label:'Користувачів', color:'#22c55e', icon:'👥' },
+        { val: users.value.filter(u=>u.isAdmin).length, label:'Адмінів', color:'#f59e0b', icon:'👑' },
+      ]);
+
+      function fmt(uah)      { return Math.round(uah).toLocaleString('uk-UA') + '\u00a0₴'; }
+      function tierColor(t)  { return TIER_COLORS[t] || '#e85d04'; }
+
+      function openAddModal() {
+        modal.editItem = null;
+        modal.cat = activeCat.value;
+        modal.form = { tier: 'mid' };
+        modal.err = '';
+        previewImg.value = '';
+        modal.open = true;
+      }
+
+      function openEditModal(item) {
+        modal.editItem = item;
+        modal.form = { ...item };
+        modal.err = '';
+        previewImg.value = item.img || '';
+        modal.open = true;
+      }
+
+      function loadImgFile(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => { modal.form.img = ev.target.result; previewImg.value = ev.target.result; };
+        reader.readAsDataURL(file);
+      }
+
+      async function submitForm() {
+        modal.err = '';
+        const fields = currentFields.value;
+        const item   = { ...modal.form };
+
+        // Числові поля (крім price — він може містити ~)
+        fields.filter(f => f.t === 'number').forEach(f => { if (item[f.k]) item[f.k] = parseFloat(item[f.k]) || 0; });
+        // Price поле — зберігаємо як число або рядок "~xxxx"
+        fields.filter(f => f.t === 'price').forEach(f => {
+          if (item[f.k] !== undefined && item[f.k] !== '') {
+            const v = String(item[f.k]).trim();
+            item[f.k] = v.startsWith('~') ? v : (parseFloat(v) || 0);
+          }
+        });
+
+        // Валідація
+        for (const f of fields.filter(f => f.r)) {
+          if (!item[f.k] && item[f.k] !== 0) { modal.err = `Поле «${f.l}» обов'язкове`; return; }
+        }
+
+        const cat = modal.editItem ? activeCat.value : modal.cat;
+        const method = modal.editItem ? 'PUT' : 'POST';
+        if (modal.editItem) item.id = modal.editItem.id;
+
+        try {
+          const res  = await fetch(`${API}/components`, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify({ adminEmail: user.email, category: cat, item }) });
+          const data = await res.json();
+          if (data.ok) {
+            // Оновлюємо локально
+            if (modal.editItem) {
+              const idx = CD.value[cat].items.findIndex(i => i.id === item.id);
+              if (idx !== -1) CD.value[cat].items[idx] = data.item;
+            } else {
+              CD.value[cat].items.push(data.item);
+            }
+            modal.open = false;
+            showToast(modal.editItem ? '✅ Зміни збережено!' : '✅ Компонент додано!');
+          } else { modal.err = data.error || 'Помилка сервера'; }
+        } catch { modal.err = 'Сервер недоступний'; }
+      }
+
+      async function deleteItem(item) {
+        if (!confirm(`Видалити «${item.name}»?`)) return;
+        try {
+          const res  = await fetch(`${API}/components`, { method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ adminEmail: user.email, category: activeCat.value, id: item.id }) });
+          const data = await res.json();
+          if (data.ok) {
+            CD.value[activeCat.value].items = CD.value[activeCat.value].items.filter(i => i.id !== item.id);
+            showToast('🗑 Видалено');
+          } else { alert(data.error); }
+        } catch { alert('Сервер недоступний'); }
+      }
+
+      async function loadUsers() {
+        try {
+          const res  = await fetch(`${API}/users`);
+          const data = await res.json();
+          users.value = data.users || [];
+        } catch { users.value = []; }
+      }
+
+      function showToast(msg) {
+        const t = document.createElement('div');
+        t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#ffffff;border:1px solid rgba(232,93,4,.3);border-radius:10px;padding:12px 20px;font-size:13px;color:#111110;z-index:9999;font-family:"Inter",sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.5);animation:fadeUp .3s ease';
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+      }
+
+      onMounted(() => { loadComponents(); });
+
+      return { user, isAdmin, CD, STEPS, TIER_UA, activeTab, activeCat, search, users, filteredItems, currentFields, stats, modal, previewImg, fmt, tierColor, openAddModal, openEditModal, loadImgFile, submitForm, deleteItem, loadUsers };
+    }
+  }).mount('#app');
+  </script>
+</body>
+</html>

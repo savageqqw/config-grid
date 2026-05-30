@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GRID Config — Вхід</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    body.in-iframe .glow-orbs { display: none !important; }
+    body.in-iframe #navbar-app { display: none !important; }
+    .auth-input { width:100%; padding:13px 16px; background:#ececea; border:1px solid #dcdcd8; border-radius:10px; font-size:14px; color:#111110; font-family:'Inter',sans-serif; outline:none; box-sizing:border-box; transition:border .2s, box-shadow .2s; }
+    .auth-input:focus { border-color:#111110; box-shadow:0 0 0 3px rgba(232,93,4,.08); }
+    .auth-input.err { border-color:rgba(239,68,68,.6); }
+  </style>
+</head>
+<body>
+  <div id="navbar-app"></div>
+
+  <div id="app" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;z-index:1">
+    <div style="width:100%;max-width:420px">
+      <!-- Лого -->
+      <div style="text-align:center;margin-bottom:32px">
+        <div style="width:56px;height:56px;background:#111110;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px">⚙️</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:900;background:#111110;-webkit-background-clip:text;-webkit-text-fill-color:transparent">GRID CONFIG</div>
+        <div style="font-size:12px;color:#aaaaaa;margin-top:4px">Конфігуратор персонального комп'ютера</div>
+      </div>
+
+      <!-- Картка -->
+      <div style="background:#ffffff;border:1px solid rgba(232,93,4,.2);border-radius:20px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.6)">
+        <div style="height:3px;background:#111110"></div>
+
+        <!-- Таби -->
+        <div style="display:flex;gap:6px;padding:16px 24px 0;background:#f5f5f3">
+          <button @click="tab = 'login'"
+            :style="{ background: tab==='login' ? 'rgba(232,93,4,.1)' : 'transparent', color: tab==='login' ? '#e85d04' : '#aaaaaa' }"
+            style="flex:1;padding:10px;border:none;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border-radius:8px;transition:all .2s">
+            Вхід
+          </button>
+          <button @click="tab = 'register'"
+            :style="{ background: tab==='register' ? 'rgba(232,93,4,.1)' : 'transparent', color: tab==='register' ? '#e85d04' : '#aaaaaa' }"
+            style="flex:1;padding:10px;border:none;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border-radius:8px;transition:all .2s">
+            Реєстрація
+          </button>
+        </div>
+
+        <div style="padding:24px">
+          <!-- ВХІД -->
+          <template v-if="tab === 'login'">
+            <div style="margin-bottom:16px">
+              <label style="display:block;font-size:10px;color:#8a8a85;letter-spacing:.05em;font-family:'Space Grotesk',sans-serif;margin-bottom:7px">EMAIL</label>
+              <input v-model="loginEmail" type="email" placeholder="your@email.com" class="auth-input" :class="{ err: errors.loginEmail }" @keydown.enter="doLogin"/>
+              <div v-if="errors.loginEmail" style="font-size:11px;color:#dc2626;margin-top:5px">{{ errors.loginEmail }}</div>
+            </div>
+            <div style="margin-bottom:20px">
+              <label style="display:block;font-size:10px;color:#8a8a85;letter-spacing:.05em;font-family:'Space Grotesk',sans-serif;margin-bottom:7px">ПАРОЛЬ</label>
+              <div style="position:relative">
+                <input v-model="loginPass" :type="showPass ? 'text' : 'password'" placeholder="••••••••" class="auth-input" :class="{ err: errors.loginPass }" style="padding-right:44px" @keydown.enter="doLogin"/>
+                <button @click="showPass = !showPass" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaaaaa;cursor:pointer;font-size:16px">{{ showPass ? '🙈' : '👁' }}</button>
+              </div>
+              <div v-if="errors.loginPass" style="font-size:11px;color:#dc2626;margin-top:5px">{{ errors.loginPass }}</div>
+            </div>
+            <div v-if="serverErr" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 14px;font-size:12px;color:#dc2626;margin-bottom:16px">{{ serverErr }}</div>
+            <button @click="doLogin" :disabled="loading"
+              style="width:100%;padding:13px;background:#111110;border:none;border-radius:10px;font-size:15px;font-weight:900;font-family:'Inter',sans-serif;color:#fff;cursor:pointer;transition:all .25s;letter-spacing:.04em;box-shadow:0 4px 20px rgba(232,93,4,.3)"
+              :style="{ opacity: loading ? .5 : 1 }">
+              {{ loading ? '⟳ Вхід...' : '🔑 Увійти' }}
+            </button>
+            <div style="text-align:center;margin-top:16px;font-size:12px;color:#aaaaaa">
+              Немає акаунту?
+              <button @click="tab = 'register'" style="background:none;border:none;color:#e85d04;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:700">Зареєструватись →</button>
+            </div>
+          </template>
+
+          <!-- РЕЄСТРАЦІЯ -->
+          <template v-else>
+            <div style="margin-bottom:16px">
+              <label style="display:block;font-size:10px;color:#8a8a85;letter-spacing:.05em;font-family:'Space Grotesk',sans-serif;margin-bottom:7px">ІМ'Я</label>
+              <input v-model="regName" type="text" placeholder="Як до вас звертатись?" class="auth-input" :class="{ err: errors.regName }"/>
+              <div v-if="errors.regName" style="font-size:11px;color:#dc2626;margin-top:5px">{{ errors.regName }}</div>
+            </div>
+            <div style="margin-bottom:16px">
+              <label style="display:block;font-size:10px;color:#8a8a85;letter-spacing:.05em;font-family:'Space Grotesk',sans-serif;margin-bottom:7px">EMAIL</label>
+              <input v-model="regEmail" type="email" placeholder="your@email.com" class="auth-input" :class="{ err: errors.regEmail }"/>
+              <div v-if="errors.regEmail" style="font-size:11px;color:#dc2626;margin-top:5px">{{ errors.regEmail }}</div>
+            </div>
+            <div style="margin-bottom:16px">
+              <label style="display:block;font-size:10px;color:#8a8a85;letter-spacing:.05em;font-family:'Space Grotesk',sans-serif;margin-bottom:7px">ПАРОЛЬ</label>
+              <div style="position:relative">
+                <input v-model="regPass" :type="showPass ? 'text' : 'password'" placeholder="Мін. 6 символів" class="auth-input" :class="{ err: errors.regPass }" style="padding-right:44px" @input="checkStrength"/>
+                <button @click="showPass = !showPass" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaaaaa;cursor:pointer;font-size:16px">{{ showPass ? '🙈' : '👁' }}</button>
+              </div>
+              <div style="margin-top:8px;height:4px;background:#ececea;border-radius:4px;overflow:hidden">
+                <div :style="{ width: strength.pct, background: strength.color }" style="height:100%;border-radius:4px;transition:all .3s"></div>
+              </div>
+              <div :style="{ color: strength.color }" style="font-size:10px;margin-top:4px">{{ strength.label }}</div>
+              <div v-if="errors.regPass" style="font-size:11px;color:#dc2626;margin-top:3px">{{ errors.regPass }}</div>
+            </div>
+            <div style="margin-bottom:20px">
+              <label style="display:block;font-size:10px;color:#8a8a85;letter-spacing:.05em;font-family:'Space Grotesk',sans-serif;margin-bottom:7px">ПОВТОРІТЬ ПАРОЛЬ</label>
+              <input v-model="regPass2" :type="showPass ? 'text' : 'password'" placeholder="••••••••" class="auth-input" :class="{ err: errors.regPass2 }"/>
+              <div v-if="errors.regPass2" style="font-size:11px;color:#dc2626;margin-top:5px">{{ errors.regPass2 }}</div>
+            </div>
+            <div v-if="serverErr" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 14px;font-size:12px;color:#dc2626;margin-bottom:16px">{{ serverErr }}</div>
+            <button @click="doRegister" :disabled="loading"
+              style="width:100%;padding:13px;background:#111110;border:none;border-radius:10px;font-size:15px;font-weight:900;font-family:'Inter',sans-serif;color:#fff;cursor:pointer;letter-spacing:.04em;box-shadow:0 4px 20px rgba(232,93,4,.3)"
+              :style="{ opacity: loading ? .5 : 1 }">
+              {{ loading ? '⟳ Реєстрація...' : '✨ Створити акаунт' }}
+            </button>
+            <div style="text-align:center;margin-top:16px;font-size:12px;color:#aaaaaa">
+              Вже є акаунт?
+              <button @click="tab = 'login'" style="background:none;border:none;color:#e85d04;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:700">Увійти →</button>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:20px">
+        <a href="index.html" style="font-size:12px;color:#c0c0bc;text-decoration:none">← Повернутись на головну</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="components.js"></script>
+  <script src="pcforge-store.js"></script>
+  <script>
+  const { createApp, ref, reactive, onMounted } = Vue;
+
+  createApp({
+    setup() {
+      const tab       = ref(new URLSearchParams(location.search).get('tab') === 'register' ? 'register' : 'login');
+      const loading   = ref(false);
+      const showPass  = ref(false);
+      const serverErr = ref('');
+      const errors    = reactive({});
+
+      const loginEmail = ref('');
+      const loginPass  = ref('');
+      const regName    = ref('');
+      const regEmail   = ref('');
+      const regPass    = ref('');
+      const regPass2   = ref('');
+      const strength   = reactive({ pct: '0%', color: '#aaaaaa', label: '' });
+
+      // Якщо вже залогінений
+      if (PCForgeStore.user) location.href = 'index.html';
+
+      function clearErrors() { Object.keys(errors).forEach(k => delete errors[k]); serverErr.value = ''; }
+
+      function checkStrength() {
+        const v = regPass.value; let score = 0;
+        if (v.length >= 6) score++;
+        if (v.length >= 10) score++;
+        if (/[A-Z]/.test(v)) score++;
+        if (/[0-9]/.test(v)) score++;
+        if (/[^A-Za-z0-9]/.test(v)) score++;
+        const lvls = [
+          { pct:'20%', color:'#ef4444', label:'Дуже слабкий' },
+          { pct:'40%', color:'#f97316', label:'Слабкий' },
+          { pct:'60%', color:'#f59e0b', label:'Середній' },
+          { pct:'80%', color:'#22c55e', label:'Сильний' },
+          { pct:'100%',color:'#e85d04', label:'Дуже сильний' },
+        ];
+        const l = lvls[Math.min(score - 1, 4)] || lvls[0];
+        Object.assign(strength, l);
+      }
+
+      function notifyShell(user) {
+        if (window.parent && window.parent !== window)
+          window.parent.postMessage({ type: 'auth-change', user }, '*');
+      }
+
+      async function doLogin() {
+        clearErrors();
+        if (!loginEmail.value) { errors.loginEmail = 'Введіть email'; return; }
+        if (!loginPass.value)  { errors.loginPass  = 'Введіть пароль'; return; }
+        loading.value = true;
+        try {
+          const res  = await fetch(`${API}/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: loginEmail.value, password: loginPass.value }) });
+          const data = await res.json();
+          if (data.ok) {
+            PCForgeStore.saveUser(data.user);
+            notifyShell(data.user);
+            const redirect = new URLSearchParams(location.search).get('redirect') || 'index.html';
+            setTimeout(() => { location.href = redirect; }, 50);
+          } else { serverErr.value = data.error || 'Помилка входу'; }
+        } catch { serverErr.value = 'Сервер недоступний. Запустіть node server.js'; }
+        loading.value = false;
+      }
+
+      async function doRegister() {
+        clearErrors();
+        if (!regName.value)         { errors.regName  = "Введіть ім'я"; return; }
+        if (!regEmail.value)        { errors.regEmail  = 'Введіть email'; return; }
+        if (regPass.value.length<6) { errors.regPass   = 'Мінімум 6 символів'; return; }
+        if (regPass.value !== regPass2.value) { errors.regPass2 = 'Паролі не співпадають'; return; }
+        loading.value = true;
+        try {
+          const res  = await fetch(`${API}/register`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name: regName.value, email: regEmail.value, password: regPass.value }) });
+          const data = await res.json();
+          if (data.ok) {
+            PCForgeStore.saveUser(data.user);
+            notifyShell(data.user);
+            setTimeout(() => { location.href = 'index.html'; }, 50);
+          } else { serverErr.value = data.error || 'Помилка реєстрації'; }
+        } catch { serverErr.value = 'Сервер недоступний. Запустіть node server.js'; }
+        loading.value = false;
+      }
+
+      return { tab, loading, showPass, serverErr, errors, loginEmail, loginPass, regName, regEmail, regPass, regPass2, strength, checkStrength, doLogin, doRegister };
+    }
+  }).mount('#app');
+  </script>
+</body>
+</html>

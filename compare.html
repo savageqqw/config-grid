@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GRID Config — Порівняння</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    body.in-iframe .glow-orbs { display: none !important; }
+    body.in-iframe #navbar-app { display: none !important; }
+    .comp-row { display:grid; align-items:center; padding:11px 16px; border-bottom:1px solid #f2f2f0; transition:background .15s; }
+    .comp-row:hover { background:#f5f5f3; }
+  </style>
+</head>
+<body>
+  <div id="navbar-app"></div>
+  <div id="app" style="position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:48px 24px">
+
+    <div style="margin-bottom:48px">
+      <div style="display:inline-flex;padding:4px 14px;border-radius:3px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#f59e0b;font-size:10px;letter-spacing:.06em;font-weight:700;font-family:'Space Grotesk',sans-serif;margin-bottom:14px">ПОРІВНЯННЯ</div>
+      <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(24px,4vw,44px);font-weight:900;color:#111110;margin-bottom:8px">Порівняння компонентів</h1>
+      <p style="color:#8a8a85;font-size:16px">Додайте до 3 компонентів для детального порівняння</p>
+    </div>
+
+    <!-- Слоти -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px">
+      <div v-for="(slot, i) in slots" :key="i"
+        @click="!slot && openSelector(i)"
+        :style="{ background: slot ? '#f2f2f0' : '#f5f5f3', border: slot ? '1px solid rgba(232,93,4,.2)' : '2px dashed #e0e0dc', cursor: slot ? 'default' : 'pointer', position:'relative', overflow:'hidden', borderRadius:'16px', padding:'24px', textAlign:'center', minHeight:'140px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }">
+        <template v-if="slot">
+          <div :style="{ background: slot.accent }" style="position:absolute;top:0;left:0;right:0;height:2px"></div>
+          <span :style="{ background: (slot.accent||'#e85d04')+'22', border: `1px solid ${slot.accent||'#e85d04'}55`, color: slot.accent||'#e85d04' }"
+            style="display:inline-flex;padding:2px 10px;border-radius:3px;font-size:10px;letter-spacing:.05em;font-weight:700;font-family:'Space Grotesk',sans-serif;margin-bottom:10px">
+            {{ slot.catLabel }}
+          </span>
+          <div style="font-weight:700;color:#111110;font-size:14px;line-height:1.35;margin-bottom:8px">{{ slot.name }}</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:900;color:#e85d04;margin-bottom:12px">{{ fmt(slot.price) }}</div>
+          <button @click.stop="removeSlot(i)"
+            style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#dc2626;padding:4px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif">
+            Видалити
+          </button>
+        </template>
+        <template v-else>
+          <div style="font-size:36px;margin-bottom:12px;opacity:.3">+</div>
+          <div style="font-size:13px;color:#c0c0bc">Додати компонент</div>
+          <div style="font-size:11px;color:#e4e4e0;margin-top:4px">Слот {{ i + 1 }}</div>
+        </template>
+      </div>
+    </div>
+
+    <!-- Таблиця порівняння -->
+    <div v-if="filledSlots.length >= 2" style="background:#f5f5f3;border:1px solid #e8e8e4;border-radius:16px;overflow:hidden">
+      <div :style="{ gridTemplateColumns: `200px repeat(${filledSlots.length},1fr)` }" class="comp-row" style="background:rgba(232,93,4,.05);border-bottom:1px solid rgba(232,93,4,.1)">
+        <span style="font-size:10px;color:#c0c0bc;font-family:'Space Grotesk',sans-serif;letter-spacing:.04em">ХАРАКТЕРИСТИКА</span>
+        <div v-for="slot in filledSlots" :key="slot.id" style="padding-left:16px;border-left:1px solid #ececea">
+          <div style="font-size:12px;font-weight:700;color:#111110;line-height:1.35">{{ slot.name }}</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:900;color:#e85d04;margin-top:6px">{{ fmt(slot.price) }}</div>
+        </div>
+      </div>
+      <div v-for="(key, ki) in allSpecKeys" :key="key"
+        :style="{ gridTemplateColumns: `200px repeat(${filledSlots.length},1fr)`, background: ki%2===0 ? 'transparent' : 'rgba(255,255,255,.015)' }"
+        class="comp-row">
+        <span style="font-size:12px;color:#8a8a85">{{ key }}</span>
+        <div v-for="slot in filledSlots" :key="slot.id" style="padding-left:16px;border-left:1px solid #f2f2f0">
+          <span :style="{ color: isBest(key, slot) ? '#22c55e' : '#8a8a85', fontWeight: isBest(key, slot) ? 700 : 400 }" style="font-size:13px">
+            {{ getSpecVal(slot, key) || '—' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div v-else style="text-align:center;padding:64px;color:#c0c0bc">
+      <div style="font-size:60px;margin-bottom:20px;opacity:.3">⚖️</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:16px;margin-bottom:8px">Додайте принаймні 2 компоненти</div>
+      <div style="font-size:13px">Натисніть на порожні слоти щоб вибрати компоненти</div>
+    </div>
+
+    <!-- SELECTOR MODAL -->
+    <div v-if="selectorOpen !== null" @click.self="selectorOpen = null"
+      style="position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px">
+      <div style="background:#ffffff;border:1px solid rgba(232,93,4,.2);border-radius:20px;padding:28px;max-width:700px;width:100%;max-height:80vh;overflow:hidden;display:flex;flex-direction:column">
+        <div style="margin-bottom:16px">
+          <h3 style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:800;color:#111110;margin-bottom:12px">Оберіть компонент</h3>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button v-for="(catObj, catKey) in CD" :key="catKey" @click="selectorCat = catKey"
+              :style="{ background: selectorCat===catKey ? catObj.accent+'22' : 'transparent', border: `1px solid ${selectorCat===catKey ? catObj.accent+'55' : '#e8e8e4'}`, color: selectorCat===catKey ? catObj.accent : '#8a8a85' }"
+              style="padding:4px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Space Grotesk',sans-serif;letter-spacing:.06em">
+              {{ catObj.short }}
+            </button>
+          </div>
+        </div>
+        <div style="overflow-y:auto;flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding-right:4px">
+          <div v-for="item in CD[selectorCat]?.items || []" :key="item.id"
+            @click="addToSlot(item, selectorCat)"
+            class="comp-card" style="background:#f2f2f0;border:1px solid #e4e4e0;border-radius:10px;padding:14px;cursor:pointer">
+            <span :style="{ background: tierColor(item.tier)+'22', border: `1px solid ${tierColor(item.tier)}55`, color: tierColor(item.tier) }"
+              style="display:inline-flex;padding:2px 8px;border-radius:3px;font-size:9px;font-weight:700;font-family:'Space Grotesk',sans-serif;margin-bottom:8px">
+              {{ TIER_UA[item.tier] || item.tier }}
+            </span>
+            <div style="font-size:12px;font-weight:600;color:#111110;margin-bottom:6px;line-height:1.35">{{ item.name }}</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:900;color:#e85d04">{{ fmt(item.price) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="components.js"></script>
+  <script src="pcforge-store.js"></script>
+  <script>
+  const { createApp, ref, computed, onMounted } = Vue;
+
+  createApp({
+    setup() {
+      const CD          = computed(() => PCForgeStore.CD);
+      const slots       = ref([null, null, null]);
+      const selectorOpen = ref(null);
+      const selectorCat  = ref('cpu');
+
+      const filledSlots  = computed(() => slots.value.filter(Boolean));
+      const allSpecKeys  = computed(() => [...new Set(filledSlots.value.flatMap(s => Object.keys(getCompareSpecs(s))))]);
+
+      function fmt(v) { const {num,approx} = parsePrice(v); return (approx?'~':'')+Math.round(num).toLocaleString('uk-UA')+'\u00a0₴'; }
+      function tierColor(t)   { return TIER_COLORS[t] || '#e85d04'; }
+      function openSelector(i){ selectorOpen.value = i; selectorCat.value = 'cpu'; }
+      function removeSlot(i)  { const s = [...slots.value]; s[i] = null; slots.value = s; }
+
+      function addToSlot(item, catKey) {
+        if (selectorOpen.value === null) return;
+        const d   = CD.value[catKey];
+        const s   = [...slots.value];
+        s[selectorOpen.value] = { ...item, catLabel: d?.short, accent: d?.accent };
+        slots.value     = s;
+        selectorOpen.value = null;
+      }
+
+      function getCompareSpecs(item) {
+        if (!item) return {};
+        if (item.cat==='cpu') return { 'Бренд':item.brand,'Ядра':item.cores,'Потоки':item.threads,'Boost Clock':item.boost,'TDP':item.tdp?item.tdp+'W':null,'Сокет':item.socket,'Продуктивність':item.perf?item.perf+'/100':null,'Ціна':fmt(item.price) };
+        if (item.cat==='gpu') return { 'Бренд':item.brand,'VRAM':item.vram,'TDP':item.tdp?item.tdp+'W':null,'Продуктивність':item.perf?item.perf+'/100':null,'Ціна':fmt(item.price) };
+        return { 'Бренд':item.brand,'Ціна':fmt(item.price) };
+      }
+
+      function getSpecVal(slot, key) { return getCompareSpecs(slot)[key] || '—'; }
+
+      function isBest(key, slot) {
+        if (key === 'Ціна' || key === 'TDP' || key === 'Бренд' || key === 'Сокет') return false;
+        const vals = filledSlots.value.map(s => parseFloat(String(getSpecVal(s, key)).replace(/[^0-9.]/g, '')));
+        const cur  = parseFloat(String(getSpecVal(slot, key)).replace(/[^0-9.]/g, ''));
+        return !isNaN(cur) && cur === Math.max(...vals.filter(v => !isNaN(v)));
+      }
+
+      onMounted(() => { loadComponents(); });
+
+      return { CD, slots, selectorOpen, selectorCat, filledSlots, allSpecKeys, TIER_UA, fmt, tierColor, openSelector, removeSlot, addToSlot, getSpecVal, isBest };
+    }
+  }).mount('#app');
+  </script>
+</body>
+</html>

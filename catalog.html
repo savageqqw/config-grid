@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GRID Config — Каталог збірок</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div id="navbar-app"></div>
+  <div id="app" style="position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:48px 24px">
+
+    <div style="margin-bottom:48px">
+      <div style="display:inline-flex;padding:4px 14px;border-radius:3px;background:rgba(232,93,4,.1);border:1px solid rgba(232,93,4,.3);color:#e85d04;font-size:10px;letter-spacing:.06em;font-weight:700;font-family:'Space Grotesk',sans-serif;margin-bottom:14px">КАТАЛОГ</div>
+      <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(24px,4vw,44px);font-weight:900;color:#111110;margin-bottom:8px">Готові збірки ПК</h1>
+      <p style="color:#8a8a85;font-size:16px;max-width:500px">Збалансовані конфігурації для різних задач та бюджетів.</p>
+    </div>
+
+    <!-- Фільтр -->
+    <div style="display:flex;gap:8px;margin-bottom:36px;flex-wrap:wrap">
+      <button v-for="c in cats" :key="c.key" @click="filter = c.key"
+        :style="{ background: filter===c.key ? 'rgba(232,93,4,.12)' : '#f2f2f0', border: `1px solid ${filter===c.key ? 'rgba(232,93,4,.35)' : '#e8e8e4'}`, color: filter===c.key ? '#e85d04' : '#8a8a85' }"
+        style="padding:8px 20px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;transition:all .2s">
+        {{ c.label }}
+      </button>
+    </div>
+
+    <!-- Пресети -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:24px">
+      <div v-for="(p, i) in filtered" :key="p.id" class="card-hover"
+        :style="{ border: `1px solid ${p.tagColor}22`, animation: `fadeUp .5s ease ${i*.08}s both` }"
+        style="background:#f2f2f0;border-radius:20px;overflow:hidden">
+        <!-- Верхня лінія -->
+        <div :style="{ background: p.tagColor }" style="height:3px"></div>
+        <div style="padding:20px 24px;border-bottom:1px solid #ececea" :style="{ background: `linear-gradient(135deg,${p.tagColor}18,${p.tagColor}08)` }">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <span :style="{ background: p.tagColor+'22', border: `1px solid ${p.tagColor}55`, color: p.tagColor }"
+                style="display:inline-flex;padding:2px 10px;border-radius:3px;font-size:10px;letter-spacing:.05em;font-weight:700;font-family:'Space Grotesk',sans-serif;margin-bottom:8px">
+                {{ p.tag }}
+              </span>
+              <div style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:900;color:#111110">{{ p.icon }} {{ p.name }}</div>
+              <div style="font-size:13px;color:#8a8a85;margin-top:4px">{{ p.subtitle }}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div :style="{ color: p.tagColor }" style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:900">{{ fmt(p.price) }}</div>
+              <div style="font-size:10px;color:#aaaaaa">загальна вартість</div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:24px">
+          <!-- Ключові компоненти -->
+          <div style="margin-bottom:20px">
+            <div style="font-size:11px;color:#c0c0bc;letter-spacing:.04em;font-family:'Space Grotesk',sans-serif;margin-bottom:10px">КЛЮЧОВІ КОМПОНЕНТИ</div>
+            <div v-for="catKey in ['cpu','gpu','ram']" :key="catKey">
+              <div v-if="getItem(p, catKey)" style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:6px 10px;background:#f2f2f0;border-radius:6px">
+                <span style="font-size:14px">{{ CD[catKey]?.icon }}</span>
+                <div style="flex:1;min-width:0">
+                  <div :style="{ color: CD[catKey]?.accent }" style="font-size:10px;letter-spacing:.08em;font-family:'Space Grotesk',sans-serif">{{ CD[catKey]?.short }}</div>
+                  <div style="font-size:12px;color:#8a8a85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ getItem(p, catKey)?.name }}</div>
+                </div>
+                <div style="font-size:12px;font-weight:700;color:#aaaaaa;flex-shrink:0">{{ fmt(getItem(p, catKey)?.price || 0) }}</div>
+              </div>
+            </div>
+          </div>
+          <!-- Продуктивність -->
+          <div style="margin-bottom:20px">
+            <div style="font-size:11px;color:#c0c0bc;letter-spacing:.04em;font-family:'Space Grotesk',sans-serif;margin-bottom:10px">ПРОДУКТИВНІСТЬ</div>
+            <div v-for="bar in perfBars(p)" :key="bar.label" style="margin-bottom:8px">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#8a8a85;margin-bottom:4px">
+                <span>{{ bar.label }}</span><span :style="{ color: p.tagColor }" style="font-weight:700">{{ bar.val }}%</span>
+              </div>
+              <div style="height:5px;background:#ececea;border-radius:4px;overflow:hidden">
+                <div :style="{ width: bar.val+'%', background: p.tagColor }" style="height:100%;border-radius:4px"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Теги -->
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+            <span v-for="u in p.use" :key="u" style="font-size:11px;background:#ececea;border:1px solid #e4e4e0;border-radius:4px;padding:4px 10px;color:#8a8a85">{{ u }}</span>
+          </div>
+          <p style="font-size:12px;color:#aaaaaa;line-height:1.65;margin-bottom:20px">{{ p.desc }}</p>
+          <a :href="`configurator.html?preset=${p.id}`"
+            :style="{ background: `linear-gradient(135deg,${p.tagColor},${p.tagColor}99)`, color: p.tag==='BUDGET' ? '#000' : '#fff' }"
+            style="display:block;text-align:center;border:none;padding:11px;border-radius:8px;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;text-decoration:none">
+            🔧 Завантажити в конфігуратор
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="components.js"></script>
+  <script src="pcforge-store.js"></script>
+  <script>
+  const { createApp, ref, computed, onMounted } = Vue;
+
+  const PRESETS = [
+    {id:'ultra-gaming',name:'Дорогий геймінг',subtitle:'Максимум для 4K & 60+fps',tag:'Ультра',tagColor:'#ff4444',price:184800,comps:{cpu:'cpu2',gpu:'gpu1',ram:'ram1',motherboard:'mb1',storage:'st1',psu:'psu1',case:'case1',cooling:'cool1'},perf:{gaming:99,streaming:95,rendering:90},use:['4K Gaming 60+fps','Стримінг у 4K','3D-Рендеринг','ML / AI задачі'],icon:'👑',desc:'RTX 5090 + Ryzen 9 7950X3D — абсолютна межа споживчого заліза.'},
+    {id:'pro-gaming',name:'PRO GAMING',subtitle:'Ідеал для 1440p без обмежень',tag:'HIGH',tagColor:'#ff8c00',price:118500,comps:{cpu:'cpu4',gpu:'gpu3',ram:'ram2',motherboard:'mb3',storage:'st3',psu:'psu2',case:'case3',cooling:'cool3'},perf:{gaming:85,streaming:80,rendering:75},use:['1440p Gaming 165fps','Full HD Стримінг','Відеомонтаж'],icon:'🎮',desc:'RTX 4080 Super та i7-14700K — грай без обмежень.'},
+    {id:'workstation',name:'WORKSTATION PRO',subtitle:'Для професійної творчості',tag:'PRO',tagColor:'#8a8a85',price:157500,comps:{cpu:'cpu1',gpu:'gpu2',ram:'ram1',motherboard:'mb2',storage:'st1',psu:'psu1',case:'case2',cooling:'cool2'},perf:{gaming:88,streaming:92,rendering:98},use:['3D Рендеринг / VFX','Машинне навчання','CAD / BIM'],icon:'🏭',desc:'Ryzen 9 7950X + RX 7900 XTX 24GB — для митців та інженерів.'},
+    {id:'streaming',name:'STREAMING PRO',subtitle:'Кращий вибір для стримерів',tag:'STREAM',tagColor:'#ff6b9d',price:91200,comps:{cpu:'cpu3',gpu:'gpu4',ram:'ram2',motherboard:'mb4',storage:'st3',psu:'psu2',case:'case3',cooling:'cool3'},perf:{gaming:75,streaming:98,rendering:70},use:['1080p/1440p Стримінг','YouTube-контент','Подкасти'],icon:'🎙️',desc:'Ryzen 7 7700X + RTX 4070 Ti Super — ідеальний стрим.'},
+    {id:'mid-gaming',name:'MID GAMING',subtitle:'Розумний вибір за кращою ціною',tag:'MID',tagColor:'#e85d04',price:64700,comps:{cpu:'cpu6',gpu:'gpu5',ram:'ram3',motherboard:'mb5',storage:'st5',psu:'psu3',case:'case4',cooling:'cool4'},perf:{gaming:68,streaming:58,rendering:52},use:['1080p Gaming 144fps','Базовий стримінг','Навчання'],icon:'⚡',desc:'RX 7800 XT + i5-14600K — найкраще поєднання ціна/якість.'},
+    {id:'budget',name:'BUDGET BUILD',subtitle:'Максимум за мінімум коштів',tag:'BUDGET',tagColor:'#22c55e',price:32500,comps:{cpu:'cpu7',gpu:'gpu7',ram:'ram4',motherboard:'mb6',storage:'st5',psu:'psu4',case:'case5',cooling:'cool5'},perf:{gaming:46,streaming:34,rendering:28},use:['1080p Gaming','Офісні задачі','Навчання'],icon:'💡',desc:'Найдоступніше рішення для входу у PC-гейминг.'},
+  ];
+  const CAT_MAP = {'ultra-gaming':'gaming','pro-gaming':'gaming','streaming':'gaming','workstation':'workstation','mid-gaming':'gaming','budget':'budget'};
+
+  createApp({
+    setup() {
+      const filter = ref('all');
+      const CD     = computed(() => PCForgeStore.CD);
+      const cats   = [
+        { key:'all',         label:'Всі збірки' },
+        { key:'gaming',      label:'Ігрові' },
+        { key:'workstation', label:'Робочі станції' },
+        { key:'budget',      label:'Бюджетні' },
+      ];
+      const filtered = computed(() =>
+        filter.value === 'all' ? PRESETS : PRESETS.filter(p => CAT_MAP[p.id] === filter.value)
+      );
+
+      function fmt(v) { const {num,approx} = parsePrice(v); return (approx?'~':'')+Math.round(num).toLocaleString('uk-UA')+'\u00a0₴'; }
+      function getItem(p, cat)  { return CD.value[cat]?.items?.find(i => i.id === p.comps[cat]); }
+      function perfBars(p)      { return [{ label:'🎮 Gaming', val: p.perf.gaming }, { label:'📡 Streaming', val: p.perf.streaming }, { label:'🎨 Rendering', val: p.perf.rendering }]; }
+
+      onMounted(() => { loadComponents(); });
+
+      return { filter, cats, filtered, CD, fmt, getItem, perfBars };
+    }
+  }).mount('#app');
+  </script>
+</body>
+</html>

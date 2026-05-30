@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GRID Config</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  
+
+  <div id="navbar-app"></div>
+
+  <div id="app">
+    <!-- HERO -->
+    <section style="padding:100px 24px 60px;text-align:center;position:relative">
+      <div style="display:none"></div>
+      <div style="position:relative;max-width:900px;margin:0 auto">
+        <div style="display:inline-flex;align-items:center;padding:4px 14px;border-radius:3px;background:rgba(232,93,4,.1);border:1px solid rgba(232,93,4,.3);color:#e85d04;font-size:10px;letter-spacing:.06em;font-weight:700;font-family:'Space Grotesk',sans-serif;margin-bottom:24px">⚙️ КОНФІГУРАТОР ПК</div>
+        <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,6vw,68px);font-weight:900;margin:0 0 20px;line-height:1.05;color:#111110">
+          <span class="shimmer-text">Онлайн збірка ПК</span><br/>
+        </h1>
+        
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+          <a href="configurator.html" class="btn-primary"
+            style="background:#111110;color:#fff;padding:16px 36px;border-radius:12px;font-size:16px;font-weight:900;font-family:'Inter',sans-serif;letter-spacing:.05em;box-shadow:0 0 40px rgba(232,93,4,.35);text-decoration:none">
+             Запустити Конфігуратор
+          </a>
+          <a href="catalog.html" class="btn-secondary"
+            style="background:rgba(17,17,16,.1);border:1px solid rgba(17,17,16,.3);color:#8a8a85;padding:16px 36px;border-radius:12px;font-size:16px;font-weight:700;font-family:'Inter',sans-serif;text-decoration:none">
+             Готові збірки
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section style="padding:0 24px 60px;max-width:800px;margin:0 auto" id="stats-section">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+        <div v-for="s in stats" :key="s.label"
+          style="background:#f2f2f0;border-radius:14px;padding:20px;text-align:center"
+          :style="{ border: '1px solid #e4e4e0' }">
+          <div class="counter" :data-target="s.val" :style="{ color: s.color }"
+            style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:900">{{ s.val }}</div>
+          <div style="font-size:11px;color:#aaaaaa;margin-top:6px">{{ s.label }}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section style="padding:60px 24px;max-width:1200px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:48px">
+        <div style="display:inline-flex;padding:4px 14px;border-radius:3px;background:rgba(232,93,4,.1);border:1px solid rgba(232,93,4,.3);color:#e85d04;font-size:10px;letter-spacing:.06em;font-weight:700;font-family:'Space Grotesk',sans-serif;margin-bottom:16px">МОЖЛИВОСТІ</div>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(24px,4vw,40px);font-weight:800;color:#111110">Можливості GRID Config?</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px">
+        <div v-for="(f, i) in features" :key="f.title" class="card-hover"
+          style="background:#f2f2f0;border:1px solid #e8e8e4;border-radius:16px;padding:28px"
+          :style="{ animation: `fadeUp .6s ease ${i * .1}s both` }">
+          <div style="font-size:32px;margin-bottom:16px">{{ f.icon }}</div>
+          <h3 style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#111110;margin-bottom:10px">{{ f.title }}</h3>
+          <p style="font-size:13px;color:#8a8a85;line-height:1.65">{{ f.desc }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section style="padding:80px 24px;text-align:center;position:relative;overflow:hidden">
+      <div style="display:none"></div>
+      <div style="position:relative;max-width:600px;margin:0 auto">
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(24px,4vw,44px);font-weight:900;color:#111110;margin-bottom:16px;line-height:1.1">
+          Проста та швидка збірка<br/><span class="gradient-text-2">ПК</span>
+        </h2>
+        <p style="color:#8a8a85;font-size:16px;margin-bottom:36px;line-height:1.6">Простий функціональний конфігуратор для створення ПК</p>
+        <a href="configurator.html" class="btn-primary"
+          style="display:inline-block;background:#111110;color:#fff;padding:16px 40px;border-radius:12px;font-size:18px;font-weight:900;font-family:'Inter',sans-serif;letter-spacing:.06em;box-shadow:0 0 40px rgba(232,93,4,.4);text-decoration:none">
+          ⚙️ Перейти в Конфігуратор
+        </a>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-brand">GRID Config</div>
+      <p>Конфігуратор персонального комп'ютера · Розумний підбір комплектуючих</p>
+    </footer>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="components.js"></script>
+  <script src="pcforge-store.js"></script>
+  <script>
+  const { createApp, ref, onMounted } = Vue;
+
+  createApp({
+    setup() {
+      const stats = [
+        { val: 8,    label: 'Категорій',                        color: '#e85d04' },
+        { val: '200+',  label: 'Компонентів',                      color: '#8a8a85' },
+        { val: 6,    label: 'Готових збірок',                   color: '#22c55e' },
+        { val: 100,  label: '% Перевірка сумісності',           color: '#ff6b35' },
+      ];
+      const features = [
+        { icon: '⚡', title: 'Швидкий підбір комплектуючих',     desc: 'Миттєво знаходьте оптимальні компоненти — фільтри за бюджетом, тиром та сокетом' },
+        { icon: '⚖️', title: 'Порівняння комплектуючих',          desc: 'Детальне порівняння до 3 компонентів з підсвіткою кращих характеристик' },
+        { icon: '💾', title: 'Збереження збірок у різні формати', desc: 'Зберігай у браузері, завантажуй .txt або копіюй у буфер — ділись будь-коли' },
+      ];
+
+      onMounted(() => {
+        // Анімація лічильників
+        document.querySelectorAll('.counter').forEach(el => {
+          const raw    = el.dataset.target;
+          const suffix = raw.toString().replace(/[0-9]/g, '');
+          const target = parseInt(raw);
+          if (isNaN(target)) return;
+          let start = null;
+          const obs = new IntersectionObserver(([e]) => {
+            if (!e.isIntersecting) return;
+            obs.disconnect();
+            const step = ts => {
+              if (!start) start = ts;
+              const p = Math.min((ts - start) / 1500, 1);
+              el.textContent = Math.floor(p * target) + suffix;
+              if (p < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+          }, { threshold: .3 });
+          obs.observe(el);
+        });
+      });
+
+      return { stats, features };
+    }
+  }).mount('#app');
+  </script>
+</body>
+</html>
