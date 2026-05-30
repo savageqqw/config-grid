@@ -64,7 +64,7 @@ function sendJSON(res, status, data) {
 function serveStatic(req, res) {
   // Відрізаємо query string (?build=..., ?preset=... тощо)
   const urlPath = req.url.split('?')[0];
-  let filePath = path.join(__dirname, urlPath === '/' ? 'index.html' : urlPath);
+  let filePath = path.join(__dirname, urlPath === '/' ? 'shell.html' : urlPath);
   const extMap = {
     '.html':'text/html', '.css':'text/css', '.js':'application/javascript',
     '.json':'application/json', '.png':'image/png', '.jpg':'image/jpeg',

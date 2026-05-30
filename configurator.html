@@ -15,18 +15,16 @@
   </style>
 </head>
 <body>
-  <div id="navbar-app"></div>
-
   <div id="app" style="position:relative;z-index:1">
     <div v-if="!cdLoaded" style="display:flex;align-items:center;justify-content:center;height:60vh;flex-direction:column;gap:16px">
       <div style="font-size:40px;animation:spin 1s linear infinite">⚙️</div>
-      <div style="font-family:'Space Grotesk',sans-serif;font-size:14px;color:#aaaaaa">Завантаження компонентів...</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:14px;color:#737373">Завантаження компонентів...</div>
     </div>
 
     <div v-else class="configurator-layout">
       <!-- STEPS -->
       <div class="configurator-steps">
-        <div style="font-family:'Space Grotesk',sans-serif;font-size:10px;color:#c0c0bc;letter-spacing:.06em;margin-bottom:16px;padding:0 8px">КОМПОНЕНТИ</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:10px;color:#525252;letter-spacing:.06em;margin-bottom:16px;padding:0 8px">КОМПОНЕНТИ</div>
         <div v-for="(s, i) in STEPS" :key="s"
           class="step-item"
           :style="stepStyle(s, i)"
@@ -34,16 +32,16 @@
           <div style="display:flex;align-items:center;gap:8px">
             <span style="font-size:14px">{{ CD[s]?.icon }}</span>
             <div style="flex:1;min-width:0">
-              <div :style="{ fontSize:'11px', fontWeight:700, color: step===i ? CD[s]?.accent : (sel[s] ? '#111110' : '#aaaaaa'), fontFamily: step===i ? `'Space Grotesk',sans-serif` : `'Inter',sans-serif` }">{{ CD[s]?.short }}</div>
-              <div v-if="sel[s]" style="font-size:10px;color:#8a8a85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">{{ findComp(s, sel[s])?.name?.split(' ').slice(0,3).join(' ') }}</div>
+              <div :style="{ fontSize:'11px', fontWeight:700, color: step===i ? CD[s]?.accent : (sel[s] ? '#f0f0f0' : '#aaaaaa'), fontFamily: step===i ? `'Space Grotesk',sans-serif` : `'Inter',sans-serif` }">{{ CD[s]?.short }}</div>
+              <div v-if="sel[s]" style="font-size:10px;color:#737373;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">{{ findComp(s, sel[s])?.name?.split(' ').slice(0,3).join(' ') }}</div>
             </div>
             <div :style="{ width:'8px', height:'8px', borderRadius:'50%', flexShrink:0, background: sel[s] ? '#22c55e' : (step===i ? CD[s]?.accent : '#e4e4e0'), boxShadow: sel[s] ? '0 0 6px #22c55e88' : (step===i ? `0 0 6px ${CD[s]?.accent}88` : 'none') }"></div>
           </div>
         </div>
         <div style="margin-top:16px;padding:12px;background:rgba(232,93,4,.04);border:1px solid rgba(232,93,4,.1);border-radius:8px;text-align:center">
-          <div style="font-size:10px;color:#8a8a85;margin-bottom:4px">ОБРАНО</div>
+          <div style="font-size:10px;color:#737373;margin-bottom:4px">ОБРАНО</div>
           <div style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:900;color:#e85d04">
-            {{ selectedCount }}<span style="font-size:12px;color:#c0c0bc">/8</span>
+            {{ selectedCount }}<span style="font-size:12px;color:#525252">/8</span>
           </div>
         </div>
       </div>
@@ -54,7 +52,7 @@
           <div>
             <div style="display:flex;align-items:center;gap:10px">
               <span style="font-size:24px">{{ catData?.icon }}</span>
-              <h2 style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;color:#111110">{{ catData?.label }}</h2>
+              <h2 style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;color:#f0f0f0">{{ catData?.label }}</h2>
             </div>
             <div v-if="sel[cat]" style="font-size:12px;color:#22c55e;margin-top:4px">✓ Обрано: {{ findComp(cat, sel[cat])?.name }}</div>
           </div>
@@ -62,32 +60,32 @@
         </div>
 
         <!-- Budget filter -->
-        <div style="background:#f2f2f0;border:1px solid #e4e4e0;border-radius:10px;padding:14px 16px;margin-bottom:16px">
+        <div style="background:#252525;border:1px solid #2e2e2e;border-radius:10px;padding:14px 16px;margin-bottom:16px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-            <span style="font-size:10px;color:#8a8a85;font-family:'Space Grotesk',sans-serif;letter-spacing:.05em">💰 ЦІНА</span>
+            <span style="font-size:10px;color:#737373;font-family:'Space Grotesk',sans-serif;letter-spacing:.05em">💰 ЦІНА</span>
             <button v-if="budgetMin > 0 || budgetMax < 999999" @click="resetBudget"
-              style="background:none;border:none;color:#aaaaaa;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:underline">скинути</button>
+              style="background:none;border:none;color:#737373;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:underline">скинути</button>
           </div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
-            <div style="flex:1;background:#ececea;border:1px solid #dcdcd8;border-radius:8px;padding:8px 12px">
+            <div style="flex:1;background:#252525;border:1px solid #2e2e2e;border-radius:8px;padding:8px 12px">
               <input type="number" :value="budgetMin" @change="budgetMin = Math.max(0, +$event.target.value)" step="500"
-                style="width:100%;background:none;border:none;outline:none;font-size:14px;font-weight:700;color:#111110;font-family:'Space Grotesk',sans-serif"/>
+                style="width:100%;background:none;border:none;outline:none;font-size:14px;font-weight:700;color:#f0f0f0;font-family:'Space Grotesk',sans-serif"/>
             </div>
-            <span style="color:#aaaaaa;font-size:18px">—</span>
-            <div style="flex:1;background:#ececea;border:1px solid #dcdcd8;border-radius:8px;padding:8px 12px">
+            <span style="color:#737373;font-size:18px">—</span>
+            <div style="flex:1;background:#252525;border:1px solid #2e2e2e;border-radius:8px;padding:8px 12px">
               <input type="number" :value="budgetMax >= 999999 ? '' : budgetMax" @change="budgetMax = $event.target.value === '' ? 999999 : +$event.target.value" placeholder="∞" step="500"
-                style="width:100%;background:none;border:none;outline:none;font-size:14px;font-weight:700;color:#111110;font-family:'Space Grotesk',sans-serif"/>
+                style="width:100%;background:none;border:none;outline:none;font-size:14px;font-weight:700;color:#f0f0f0;font-family:'Space Grotesk',sans-serif"/>
             </div>
             <span style="color:#e85d04;font-size:15px;font-weight:900;font-family:'Space Grotesk',sans-serif">₴</span>
           </div>
           <!-- Dual slider -->
           <div ref="sliderRef" style="position:relative;height:28px;margin:0 8px 8px;cursor:pointer">
             <div style="position:absolute;top:50%;left:0;right:0;height:5px;background:#e0e0dc;border-radius:5px;transform:translateY(-50%)"></div>
-            <div :style="trackStyle" style="position:absolute;top:50%;height:5px;background:#111110;border-radius:5px;transform:translateY(-50%);pointer-events:none"></div>
+            <div :style="trackStyle" style="position:absolute;top:50%;height:5px;background:#f0f0f0;border-radius:5px;transform:translateY(-50%);pointer-events:none"></div>
             <div class="thumb" :style="{ left: minPct + '%' }" @mousedown="startDrag('min', $event)" @touchstart.prevent="startDrag('min', $event)"></div>
             <div class="thumb" :style="{ left: maxPct + '%' }" @mousedown="startDrag('max', $event)" @touchstart.prevent="startDrag('max', $event)"></div>
           </div>
-          <div style="display:flex;justify-content:space-between;font-size:10px;color:#c0c0bc;margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#525252;margin-bottom:10px">
             <span>{{ Math.round(catPriceMin/1000*10)/10 }}к ₴</span>
             <span>{{ Math.round(catPriceMax/1000*10)/10 }}к ₴</span>
           </div>
@@ -111,7 +109,7 @@
 
         <!-- Items grid -->
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px">
-          <div v-if="filteredItems.length === 0" style="grid-column:1/-1;text-align:center;padding:48px;color:#c0c0bc">
+          <div v-if="filteredItems.length === 0" style="grid-column:1/-1;text-align:center;padding:48px;color:#525252">
             <div style="font-size:40px;margin-bottom:16px">🔍</div>
             <div style="font-family:'Space Grotesk',sans-serif;font-size:14px">Нічого не знайдено</div>
           </div>
@@ -121,7 +119,7 @@
             <!-- Top bar if selected -->
             <div v-if="sel[cat] === item.id" :style="{ background: catData.accent }" style="position:absolute;top:0;left:0;right:0;height:2px"></div>
             <!-- Image -->
-            <div @click="selectComp(item.id)" style="position:relative;height:180px;background:#f5f5f3;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #ececea;overflow:hidden">
+            <div @click="selectComp(item.id)" style="position:relative;height:180px;background:#1e1e1e;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #ececea;overflow:hidden">
               <img v-if="item.img" :src="item.img" :alt="item.name" style="width:100%;height:100%;object-fit:contain;padding:12px" @error="$event.target.style.display='none'"/>
               <div v-else style="font-size:52px;color:#e4e4e0;opacity:.6">{{ catData.icon }}</div>
               <div style="position:absolute;top:8px;left:8px">
@@ -134,25 +132,25 @@
             </div>
             <!-- Content -->
             <div @click="selectComp(item.id)" style="padding:14px 16px;flex:1;display:flex;flex-direction:column">
-              <div style="font-size:13px;font-weight:700;color:#111110;margin-bottom:3px;line-height:1.35">{{ item.name }}</div>
-              <div style="font-size:11px;color:#aaaaaa;margin-bottom:12px">{{ item.brand }}</div>
+              <div style="font-size:13px;font-weight:700;color:#f0f0f0;margin-bottom:3px;line-height:1.35">{{ item.name }}</div>
+              <div style="font-size:11px;color:#737373;margin-bottom:12px">{{ item.brand }}</div>
               <div style="flex:1;margin-bottom:12px">
                 <div v-for="s in getSpecsFull(item, cat)" :key="s.k" class="spec-row">
-                  <span style="font-size:10px;color:#aaaaaa">{{ s.k }}</span>
-                  <span style="font-size:11px;font-weight:600;color:#8a8a85">{{ s.v }}</span>
+                  <span style="font-size:10px;color:#737373">{{ s.k }}</span>
+                  <span style="font-size:11px;font-weight:600;color:#737373">{{ s.v }}</span>
                 </div>
               </div>
               <div v-if="item.perf !== undefined" style="margin-bottom:12px">
-                <div style="display:flex;justify-content:space-between;font-size:10px;color:#aaaaaa;margin-bottom:4px">
+                <div style="display:flex;justify-content:space-between;font-size:10px;color:#737373;margin-bottom:4px">
                   <span>Продуктивність</span>
                   <span :style="{ color: catData.accent }" style="font-weight:700">{{ item.perf }}/100</span>
                 </div>
-                <div style="height:4px;background:#ececea;border-radius:2px">
+                <div style="height:4px;background:#252525;border-radius:2px">
                   <div :style="{ width: item.perf + '%', background: `linear-gradient(90deg,${catData.accent}66,${catData.accent})` }" style="height:100%;border-radius:2px;transition:width .8s ease"></div>
                 </div>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-                <div :style="{ color: sel[cat]===item.id ? catData.accent : '#111110' }" style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:900">{{ fmt(item.price) }}</div>
+                <div :style="{ color: sel[cat]===item.id ? catData.accent : '#f0f0f0' }" style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:900">{{ fmt(item.price) }}</div>
                 <div style="display:flex;gap:6px;align-items:center">
                   <a v-if="item.url" :href="item.url" target="_blank" @click.stop
                     style="display:flex;align-items:center;gap:4px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#fbbf24;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap">
@@ -172,16 +170,16 @@
         <div style="display:flex;justify-content:space-between;margin-top:32px;padding-top:20px;border-top:1px solid #ececea">
           <button @click="step > 0 && step--" :disabled="step === 0"
             :style="{ color: step === 0 ? '#c0c0bc' : '#8a8a85', cursor: step === 0 ? 'not-allowed' : 'pointer' }"
-            style="background:#ececea;border:1px solid #e0e0dc;padding:10px 20px;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif">
+            style="background:#252525;border:1px solid #e0e0dc;padding:10px 20px;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif">
             ← Попередній
           </button>
-          <span style="color:#c0c0bc;font-size:12px;align-self:center">{{ step + 1 }} / {{ STEPS.length }}</span>
+          <span style="color:#525252;font-size:12px;align-self:center">{{ step + 1 }} / {{ STEPS.length }}</span>
           <button v-if="step < STEPS.length - 1" @click="step++"
-            style="background:#111110;border:none;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
+            style="background:#f0f0f0;border:none;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
             Наступний →
           </button>
           <button v-else @click="showSummary = true"
-            style="background:#111110;border:none;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
+            style="background:#f0f0f0;border:none;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
             ✓ Завершити збірку
           </button>
         </div>
@@ -189,22 +187,22 @@
 
       <!-- SUMMARY SIDEBAR -->
       <div class="configurator-summary">
-        <div style="font-family:'Space Grotesk',sans-serif;font-size:10px;color:#c0c0bc;letter-spacing:.06em;margin-bottom:16px">ПІДСУМОК ЗБІРКИ</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:10px;color:#525252;letter-spacing:.06em;margin-bottom:16px">ПІДСУМОК ЗБІРКИ</div>
         <div style="background:rgba(232,93,4,.05);border:1px solid rgba(232,93,4,.15);border-radius:10px;padding:16px;margin-bottom:16px;text-align:center">
-          <div style="font-size:11px;color:#8a8a85;margin-bottom:6px">ЗАГАЛЬНА ВАРТІСТЬ</div>
+          <div style="font-size:11px;color:#737373;margin-bottom:6px">ЗАГАЛЬНА ВАРТІСТЬ</div>
           <div style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:900;color:#e85d04">{{ fmt(totalPrice) }}</div>
         </div>
-        <div v-if="totalPerf > 0" style="background:rgba(17,17,16,.05);border:1px solid rgba(17,17,16,.15);border-radius:10px;padding:16px;margin-bottom:16px">
-          <div style="font-size:11px;color:#8a8a85;margin-bottom:10px">ПРОДУКТИВНІСТЬ</div>
+        <div v-if="totalPerf > 0" style="background:rgba(17,17,16,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:16px;margin-bottom:16px">
+          <div style="font-size:11px;color:#737373;margin-bottom:10px">ПРОДУКТИВНІСТЬ</div>
           <div style="text-align:center;margin-bottom:10px">
-            <div style="font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:900;background:#111110;-webkit-background-clip:text;-webkit-text-fill-color:transparent">{{ totalPerf }}</div>
-            <div style="font-size:10px;color:#8a8a85">з 100 балів</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:900;background:#f0f0f0;-webkit-background-clip:text;-webkit-text-fill-color:transparent">{{ totalPerf }}</div>
+            <div style="font-size:10px;color:#737373">з 100 балів</div>
           </div>
           <div v-for="bar in perfBars" :key="bar.label" style="margin-bottom:8px">
-            <div style="display:flex;justify-content:space-between;font-size:10px;color:#aaaaaa;margin-bottom:3px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#737373;margin-bottom:3px">
               <span>{{ bar.label }}</span><span :style="{ color: bar.color }" style="font-weight:700">{{ bar.val }}%</span>
             </div>
-            <div style="height:4px;background:#ececea;border-radius:2px">
+            <div style="height:4px;background:#252525;border-radius:2px">
               <div :style="{ width: bar.val + '%', background: bar.color }" style="height:100%;border-radius:2px"></div>
             </div>
           </div>
@@ -219,9 +217,9 @@
           <div v-for="s in STEPS" :key="s" :style="{ opacity: sel[s] ? 1 : .4 }" style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f2f2f0">
             <div style="flex:1;min-width:0">
               <div :style="{ color: CD[s]?.accent }" style="font-size:10px;letter-spacing:.08em;font-family:'Space Grotesk',sans-serif">{{ CD[s]?.short }}</div>
-              <div style="font-size:11px;color:#8a8a85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px">{{ sel[s] ? findComp(s, sel[s])?.name?.split(' ').slice(0,3).join(' ') : '— не обрано' }}</div>
+              <div style="font-size:11px;color:#737373;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px">{{ sel[s] ? findComp(s, sel[s])?.name?.split(' ').slice(0,3).join(' ') : '— не обрано' }}</div>
             </div>
-            <div v-if="sel[s]" style="font-size:12px;font-weight:700;color:#111110;margin-left:8px;flex-shrink:0">{{ fmt(findComp(s, sel[s])?.price || 0) }}</div>
+            <div v-if="sel[s]" style="font-size:12px;font-weight:700;color:#f0f0f0;margin-left:8px;flex-shrink:0">{{ fmt(findComp(s, sel[s])?.price || 0) }}</div>
           </div>
         </div>
         <button v-if="selectedCount > 0" @click="clearAll"
@@ -229,7 +227,7 @@
           🗑 Очистити все
         </button>
         <button v-if="selectedCount >= 2" @click="showSaveModal = true"
-          style="width:100%;margin-top:10px;background:#111110,rgba(0,102,204,.15));border:1px solid rgba(232,93,4,.35);color:#e85d04;padding:10px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
+          style="width:100%;margin-top:10px;background:#f0f0f0,rgba(0,102,204,.15));border:1px solid rgba(232,93,4,.35);color:#e85d04;padding:10px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
           💾 Зберегти збірку
         </button>
         <button v-if="selectedCount >= 2" @click="exportPDF"
@@ -242,31 +240,31 @@
     <!-- SUMMARY MODAL -->
     <div v-if="showSummary" @click.self="showSummary = false"
       style="position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px">
-      <div style="background:#ffffff;border:1px solid rgba(232,93,4,.2);border-radius:20px;padding:36px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto">
+      <div style="background:#1e1e1e;border:1px solid rgba(232,93,4,.2);border-radius:20px;padding:36px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto">
         <div style="text-align:center;margin-bottom:24px">
           <div style="font-size:48px;margin-bottom:10px">🎉</div>
-          <h3 style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:900;color:#111110;margin-bottom:8px">Ваша збірка готова!</h3>
+          <h3 style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:900;color:#f0f0f0;margin-bottom:8px">Ваша збірка готова!</h3>
           <div style="font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:900;color:#e85d04">{{ fmt(totalPrice) }}</div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
           <button @click="exportPDF" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#dc2626;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">📄 PDF</button>
           <button @click="downloadTxt" style="background:rgba(232,93,4,.1);border:1px solid rgba(232,93,4,.3);color:#e85d04;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">📥 .txt</button>
-          <button @click="copyBuild" style="background:rgba(17,17,16,.1);border:1px solid rgba(17,17,16,.3);color:#8a8a85;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">{{ copied ? '✅' : '📋' }}</button>
+          <button @click="copyBuild" style="background:rgba(255,255,255,.08);border:1px solid rgba(17,17,16,.3);color:#737373;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">{{ copied ? '✅' : '📋' }}</button>
         </div>
-        <div style="background:#f5f5f3;border:1px solid #e8e8e4;border-radius:12px;overflow:hidden;margin-bottom:20px">
+        <div style="background:#1e1e1e;border:1px solid #2e2e2e;border-radius:12px;overflow:hidden;margin-bottom:20px">
           <div v-for="s in STEPS" :key="s">
             <div v-if="sel[s]" style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #f2f2f0;gap:8px">
               <div style="flex:1;min-width:0">
                 <span :style="{ color: CD[s]?.accent }" style="font-size:10px;font-family:'Space Grotesk',sans-serif;letter-spacing:.06em">{{ CD[s]?.short }} </span>
-                <span style="font-size:13px;color:#111110">{{ findComp(s, sel[s])?.name }}</span>
+                <span style="font-size:13px;color:#f0f0f0">{{ findComp(s, sel[s])?.name }}</span>
               </div>
-              <div style="font-size:13px;font-weight:700;color:#111110;flex-shrink:0">{{ fmt(findComp(s, sel[s])?.price || 0) }}</div>
+              <div style="font-size:13px;font-weight:700;color:#f0f0f0;flex-shrink:0">{{ fmt(findComp(s, sel[s])?.price || 0) }}</div>
             </div>
           </div>
         </div>
         <div style="display:flex;gap:10px">
-          <button @click="showSaveModal = true; showSummary = false" style="flex:1;background:#111110,rgba(0,102,204,.15));border:1px solid rgba(232,93,4,.35);color:#e85d04;padding:11px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">💾 Зберегти</button>
-          <button @click="showSummary = false" style="flex:1;background:#111110;border:none;color:#fff;padding:11px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif">✓ Готово</button>
+          <button @click="showSaveModal = true; showSummary = false" style="flex:1;background:#f0f0f0,rgba(0,102,204,.15));border:1px solid rgba(232,93,4,.35);color:#e85d04;padding:11px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">💾 Зберегти</button>
+          <button @click="showSummary = false" style="flex:1;background:#f0f0f0;border:none;color:#fff;padding:11px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif">✓ Готово</button>
         </div>
       </div>
     </div>
@@ -275,15 +273,15 @@
     <div v-if="showSaveModal" @click.self="showSaveModal = false"
       style="position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px">
       <div style="background:#0a0a14;border:1px solid rgba(232,93,4,.3);border-radius:20px;width:100%;max-width:440px;overflow:hidden">
-        <div style="height:3px;background:#111110"></div>
+        <div style="height:3px;background:#f0f0f0"></div>
         <div style="padding:32px">
-          <h3 style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:900;color:#111110;margin-bottom:20px">💾 Зберегти збірку</h3>
-          <label style="font-size:10px;color:#8a8a85;letter-spacing:.05em;font-family:'Space Grotesk',sans-serif;display:block;margin-bottom:8px">НАЗВА ЗБІРКИ</label>
+          <h3 style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:900;color:#f0f0f0;margin-bottom:20px">💾 Зберегти збірку</h3>
+          <label style="font-size:10px;color:#737373;letter-spacing:.05em;font-family:'Space Grotesk',sans-serif;display:block;margin-bottom:8px">НАЗВА ЗБІРКИ</label>
           <input v-model="saveName" placeholder="Наприклад: Геймінг на 1440p…" maxlength="60" @keydown.enter="confirmSave" @keydown.esc="showSaveModal = false"
-            style="width:100%;background:#ececea;border:1px solid #dcdcd8;border-radius:10px;padding:12px 14px;font-size:14px;color:#111110;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;margin-bottom:20px"/>
+            style="width:100%;background:#252525;border:1px solid #2e2e2e;border-radius:10px;padding:12px 14px;font-size:14px;color:#f0f0f0;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;margin-bottom:20px"/>
           <div style="display:flex;gap:10px">
-            <button @click="showSaveModal = false" style="background:#ececea;border:1px solid #e0e0dc;color:#8a8a85;padding:12px 20px;border-radius:10px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif">Скасувати</button>
-            <button @click="confirmSave" style="flex:1;background:#111110;border:none;color:#fff;padding:12px;border-radius:10px;font-size:14px;font-weight:900;cursor:pointer;font-family:'Inter',sans-serif">💾 Зберегти</button>
+            <button @click="showSaveModal = false" style="background:#252525;border:1px solid #e0e0dc;color:#737373;padding:12px 20px;border-radius:10px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif">Скасувати</button>
+            <button @click="confirmSave" style="flex:1;background:#f0f0f0;border:none;color:#fff;padding:12px;border-radius:10px;font-size:14px;font-weight:900;cursor:pointer;font-family:'Inter',sans-serif">💾 Зберегти</button>
           </div>
         </div>
       </div>
@@ -466,22 +464,22 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet"/>
         <style>
           *{margin:0;padding:0;box-sizing:border-box}
-          body{font-family:'Inter',Arial,sans-serif;background:#fff;color:#111110;padding:36px;max-width:820px;margin:0 auto;font-size:13px}
-          .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid #111110}
+          body{font-family:'Inter',Arial,sans-serif;background:#1e1e1e;color:#f0f0f0;padding:36px;max-width:820px;margin:0 auto;font-size:13px}
+          .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid #f0f0f0}
           .logo-box{display:flex;align-items:center;gap:10px}
-          .logo-icon{width:36px;height:36px;background:#111110;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0}
-          .logo-name{font-family:'Space Grotesk',Arial,sans-serif;font-size:22px;font-weight:800;color:#111110;letter-spacing:-.01em}
-          .logo-sub{font-size:10px;color:#8a8a85;letter-spacing:.06em;margin-top:2px}
+          .logo-icon{width:36px;height:36px;background:#f0f0f0;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0}
+          .logo-name{font-family:'Space Grotesk',Arial,sans-serif;font-size:22px;font-weight:800;color:#f0f0f0;letter-spacing:-.01em}
+          .logo-sub{font-size:10px;color:#737373;letter-spacing:.06em;margin-top:2px}
           .total-val{font-family:'Space Grotesk',Arial,sans-serif;font-size:26px;font-weight:800;color:#e85d04;text-align:right;margin-top:4px}
-          .total-label{font-size:11px;color:#8a8a85;text-align:right}
+          .total-label{font-size:11px;color:#737373;text-align:right}
           table{width:100%;border-collapse:collapse;margin-bottom:24px}
-          th{background:#f8f8f6;padding:9px 12px;font-size:10px;font-weight:700;text-align:left;border-bottom:2px solid #e4e4e0;letter-spacing:.05em;color:#8a8a85}
-          td{padding:10px 12px;font-size:12px;border-bottom:1px solid #f2f2f0;vertical-align:top;color:#111110}
+          th{background:#141414;padding:9px 12px;font-size:10px;font-weight:700;text-align:left;border-bottom:2px solid #e4e4e0;letter-spacing:.05em;color:#737373}
+          td{padding:10px 12px;font-size:12px;border-bottom:1px solid #f2f2f0;vertical-align:top;color:#f0f0f0}
           .price{font-weight:700;color:#e85d04;text-align:right;white-space:nowrap;font-size:13px}
-          .total-row td{font-weight:700;background:#f8f8f6;border-top:2px solid #e4e4e0;font-size:13px}
+          .total-row td{font-weight:700;background:#141414;border-top:2px solid #e4e4e0;font-size:13px}
           .total-row .price{font-size:16px;color:#e85d04}
-          .cat-cell{color:#8a8a85;font-size:11px}
-          .specs-cell{color:#8a8a85;font-size:11px;line-height:1.5}
+          .cat-cell{color:#737373;font-size:11px}
+          .specs-cell{color:#737373;font-size:11px;line-height:1.5}
           .footer{margin-top:20px;padding-top:14px;border-top:1px solid #e4e4e0;font-size:11px;color:#aaa;display:flex;justify-content:space-between}
         </style></head>
         <body>
@@ -490,13 +488,13 @@
               <div class="logo-icon">⚙</div>
               <div><div class="logo-name">GRID Config</div><div class="logo-sub">КОНФІГУРАТОР ПК</div></div>
             </div>
-            <div><div style="font-size:12px;color:#8a8a85">Дата: ${date}</div><div class="total-val">${fmt(totalPrice.value)}</div><div class="total-label">загальна вартість</div></div>
+            <div><div style="font-size:12px;color:#737373">Дата: ${date}</div><div class="total-val">${fmt(totalPrice.value)}</div><div class="total-label">загальна вартість</div></div>
           </div>
           <table>
             <thead><tr><th style="width:130px">КАТЕГОРІЯ</th><th style="width:180px">КОМПОНЕНТ</th><th>ХАРАКТЕРИСТИКИ</th><th style="text-align:right;width:100px">ЦІНА</th></tr></thead>
             <tbody>
               ${rows.map(r => `<tr><td class="cat-cell">${r.cat}</td><td style="font-weight:600">${r.name}</td><td class="specs-cell">${r.specs}</td><td class="price">${r.price}</td></tr>`).join('')}
-              <tr class="total-row"><td colspan="3" style="font-size:12px;letter-spacing:.04em;color:#111110">РАЗОМ</td><td class="price">${fmt(totalPrice.value)}</td></tr>
+              <tr class="total-row"><td colspan="3" style="font-size:12px;letter-spacing:.04em;color:#f0f0f0">РАЗОМ</td><td class="price">${fmt(totalPrice.value)}</td></tr>
             </tbody>
           </table>
           <div class="footer"><span>GRID Config — Конфігуратор ПК</span><span>Ціни актуальні станом на сьогодні</span></div>

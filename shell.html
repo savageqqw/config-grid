@@ -5,10 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GRID Config</title>
   <link rel="stylesheet" href="style.css"/>
+  <!-- Preload критичні скрипти щоб iframe сторінки вантажились миттєво -->
+  <link rel="preload" href="https://unpkg.com/vue@3/dist/vue.global.prod.js" as="script" crossorigin/>
+  <link rel="preload" href="components.js" as="script"/>
+  <link rel="preload" href="pcforge-store.js" as="script"/>
+  <!-- Кешуємо Vue в пам'яті браузера -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="components.js"></script>
+  <script src="pcforge-store.js"></script>
   <style>
     html, body { height: 100%; overflow: hidden; margin: 0; }
     #shell { display: flex; flex-direction: column; height: 100vh; }
-    #page-frame { flex: 1; border: none; width: 100%; background: #f8f8f6; }
+    #page-frame { flex: 1; border: none; width: 100%; background: #141414; }
     .nav-btn {
       background: transparent; border: 1px solid transparent;
       color: #8a8a85; padding: 6px 16px; border-radius: 6px;
@@ -29,7 +37,7 @@
         <div class="navbar-inner">
           <!-- Лого -->
           <div class="navbar-logo" @click="navigate('index')" style="cursor:pointer">
-            <div style="width:36px;height:36px;background:#111110;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;position:relative">
+            <div style="width:36px;height:36px;background:#f0f0f0;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;position:relative">
               <img v-if="logoImg" :src="logoImg" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/>
               <span v-else>⚙️</span>
               <input type="file" accept="image/*" @change="uploadLogo" title="Натисни щоб завантажити логотип"
@@ -59,20 +67,20 @@
                 style="display:flex;align-items:center;gap:5px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#f59e0b;padding:5px 12px;border-radius:7px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer">
                 Керування ⚙️
               </button>
-              <div style="display:flex;align-items:center;gap:8px;background:#f2f2f0;border:1px solid #e4e4e0;border-radius:8px;padding:5px 12px">
-                <div style="width:26px;height:26px;border-radius:50%;background:#111110;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#000">
+              <div style="display:flex;align-items:center;gap:8px;background:#252525;border:1px solid #2e2e2e;border-radius:8px;padding:5px 12px">
+                <div style="width:26px;height:26px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#000">
                   {{ user.name.charAt(0).toUpperCase() }}
                 </div>
-                <span style="font-size:12px;color:#111110;font-family:'Inter',sans-serif;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ user.name }}</span>
+                <span style="font-size:12px;color:#f0f0f0;font-family:'Inter',sans-serif;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ user.name }}</span>
               </div>
               <button @click="logout"
-                style="background:#fff0f0;border:1px solid #fecaca;color:#dc2626;padding:5px 12px;border-radius:7px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer">
+                style="background:#1e1e1e0f0;border:1px solid #fecaca;color:#dc2626;padding:5px 12px;border-radius:7px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer">
                 Вийти
               </button>
             </template>
             <template v-else>
               <button @click="navigate('auth')"
-                style="background:#111110;border:none;color:#fff;padding:7px 18px;border-radius:8px;font-size:13px;font-weight:800;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:.03em">
+                style="background:#f0f0f0;border:none;color:#fff;padding:7px 18px;border-radius:8px;font-size:13px;font-weight:800;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:.03em">
                 Увійти
               </button>
             </template>
@@ -133,6 +141,9 @@
         activePage.value  = key;
         currentFile.value = f;
         history.pushState({ key, file: f }, '', '#' + key);
+        // Темний фон одразу щоб не було білого flash між сторінками
+        const fr = document.getElementById('page-frame');
+        if (fr) fr.style.background = '#141414';
         updateFrame(f);
       }
 
@@ -153,6 +164,8 @@
         if (!frame) return;
 
         frame.addEventListener('load', () => {
+          // Встановлюємо темний фон одразу щоб не було білого flash
+          try { frame.contentDocument.body.style.background = '#141414'; } catch{}
           try {
             const iDoc = frame.contentDocument;
             // Ховаємо внутрішній navbar і orbs
