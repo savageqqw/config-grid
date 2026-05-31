@@ -80,7 +80,7 @@
           </div>
           <!-- Dual slider -->
           <div ref="sliderRef" style="position:relative;height:28px;margin:0 8px 8px;cursor:pointer">
-            <div style="position:absolute;top:50%;left:0;right:0;height:5px;background:#e0e0dc;border-radius:5px;transform:translateY(-50%)"></div>
+            <div style="position:absolute;top:50%;left:0;right:0;height:5px;background:#2e2e2e;border-radius:5px;transform:translateY(-50%)"></div>
             <div :style="trackStyle" style="position:absolute;top:50%;height:5px;background:#e85d04;border-radius:5px;transform:translateY(-50%);pointer-events:none"></div>
             <div class="thumb" :style="{ left: minPct + '%' }" @mousedown="startDrag('min', $event)" @touchstart.prevent="startDrag('min', $event)"></div>
             <div class="thumb" :style="{ left: maxPct + '%' }" @mousedown="startDrag('max', $event)" @touchstart.prevent="startDrag('max', $event)"></div>
