@@ -8,7 +8,7 @@
   <style>
     body.in-iframe .glow-orbs { display: none !important; }
     body.in-iframe #navbar-app { display: none !important; }
-    .spec-row { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #f2f2f0; }
+    .spec-row { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #2e2e2e; }
     .spec-row:last-child { border-bottom: none; }
     .thumb { position:absolute; top:50%; width:18px; height:18px; border-radius:50%; background:#e85d04; border:3px solid #0a0a14; transform:translate(-50%,-50%); cursor:grab; box-shadow:0 0 8px rgba(232,93,4,.6); transition:box-shadow .15s; z-index:3; }
     .thumb:active { cursor:grabbing; box-shadow:0 0 16px rgba(232,93,4,.9); }
@@ -35,7 +35,7 @@
               <div :style="{ fontSize:'11px', fontWeight:700, color: step===i ? CD[s]?.accent : (sel[s] ? '#f0f0f0' : '#aaaaaa'), fontFamily: step===i ? `'Space Grotesk',sans-serif` : `'Inter',sans-serif` }">{{ CD[s]?.short }}</div>
               <div v-if="sel[s]" style="font-size:10px;color:#737373;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">{{ findComp(s, sel[s])?.name?.split(' ').slice(0,3).join(' ') }}</div>
             </div>
-            <div :style="{ width:'8px', height:'8px', borderRadius:'50%', flexShrink:0, background: sel[s] ? '#22c55e' : (step===i ? CD[s]?.accent : '#e4e4e0'), boxShadow: sel[s] ? '0 0 6px #22c55e88' : (step===i ? `0 0 6px ${CD[s]?.accent}88` : 'none') }"></div>
+            <div :style="{ width:'8px', height:'8px', borderRadius:'50%', flexShrink:0, background: sel[s] ? '#22c55e' : (step===i ? CD[s]?.accent : '#3a3a3a'), boxShadow: sel[s] ? '0 0 6px #22c55e88' : (step===i ? `0 0 6px ${CD[s]?.accent}88` : 'none') }"></div>
           </div>
         </div>
         <div style="margin-top:16px;padding:12px;background:rgba(232,93,4,.04);border:1px solid rgba(232,93,4,.1);border-radius:8px;text-align:center">
@@ -91,7 +91,7 @@
           </div>
           <div style="display:flex;gap:5px;flex-wrap:wrap">
             <button v-for="p in budgetPresets" :key="p.l" @click="setBudgetPreset(p.mn, p.mx)"
-              :style="{ background: budgetMin===p.mn && budgetMax===p.mx ? 'rgba(232,93,4,.15)' : '#f2f2f0', border: `1px solid ${budgetMin===p.mn && budgetMax===p.mx ? 'rgba(232,93,4,.4)' : '#e4e4e0'}`, color: budgetMin===p.mn && budgetMax===p.mx ? '#e85d04' : '#8a8a85', fontWeight: budgetMin===p.mn && budgetMax===p.mx ? 700 : 400 }"
+              :style="{ background: budgetMin===p.mn && budgetMax===p.mx ? 'rgba(232,93,4,.15)' : '#252525', border: `1px solid ${budgetMin===p.mn && budgetMax===p.mx ? 'rgba(232,93,4,.4)' : '#3a3a3a'}`, color: budgetMin===p.mn && budgetMax===p.mx ? '#e85d04' : '#8a8a85', fontWeight: budgetMin===p.mn && budgetMax===p.mx ? 700 : 400 }"
               style="padding:4px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s">
               {{ p.l }}
             </button>
@@ -101,7 +101,7 @@
         <!-- Tier filter -->
         <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap">
           <button v-for="t in tiers" :key="t.key" @click="tier = t.key"
-            :style="{ background: tier===t.key ? `${t.color}15` : 'transparent', border: `1px solid ${tier===t.key ? t.color+'44' : '#e8e8e4'}`, color: tier===t.key ? t.color : '#8a8a85' }"
+            :style="{ background: tier===t.key ? `${t.color}15` : 'transparent', border: `1px solid ${tier===t.key ? t.color+'44' : '#3a3a3a'}`, color: tier===t.key ? t.color : '#8a8a85' }"
             style="padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;letter-spacing:.06em;font-weight:700;transition:all .2s">
             {{ t.label }}
           </button>
@@ -119,9 +119,9 @@
             <!-- Top bar if selected -->
             <div v-if="sel[cat] === item.id" :style="{ background: catData.accent }" style="position:absolute;top:0;left:0;right:0;height:2px"></div>
             <!-- Image -->
-            <div @click="selectComp(item.id)" style="position:relative;height:180px;background:#1e1e1e;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #ececea;overflow:hidden">
+            <div @click="selectComp(item.id)" style="position:relative;height:180px;background:#252525;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #2e2e2e;overflow:hidden">
               <img v-if="item.img" :src="item.img" :alt="item.name" style="width:100%;height:100%;object-fit:contain;padding:12px" @error="$event.target.style.display='none'"/>
-              <div v-else style="font-size:52px;color:#e4e4e0;opacity:.6">{{ catData.icon }}</div>
+              <div v-else style="font-size:52px;color:#3a3a3a;opacity:.6">{{ catData.icon }}</div>
               <div style="position:absolute;top:8px;left:8px">
                 <span :style="{ background: tierColor(item.tier)+'22', border: `1px solid ${tierColor(item.tier)}55`, color: tierColor(item.tier) }"
                   style="display:inline-flex;align-items:center;padding:2px 10px;border-radius:3px;font-size:10px;letter-spacing:.05em;font-weight:700;font-family:'Space Grotesk',sans-serif">
@@ -156,7 +156,7 @@
                     style="display:flex;align-items:center;gap:4px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#fbbf24;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap">
                     🛒 Купити
                   </a>
-                  <button :style="{ background: sel[cat]===item.id ? catData.accent : '#e4e4e0', color: sel[cat]===item.id ? '#000' : '#8a8a85' }"
+                  <button :style="{ background: sel[cat]===item.id ? catData.accent : '#252525', color: sel[cat]===item.id ? '#fff' : '#737373' }"
                     style="border:none;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap">
                     {{ sel[cat] === item.id ? '✓ Обрано' : 'Обрати' }}
                   </button>
@@ -167,10 +167,10 @@
         </div>
 
         <!-- Navigation -->
-        <div style="display:flex;justify-content:space-between;margin-top:32px;padding-top:20px;border-top:1px solid #ececea">
+        <div style="display:flex;justify-content:space-between;margin-top:32px;padding-top:20px;border-top:1px solid #2e2e2e">
           <button @click="step > 0 && step--" :disabled="step === 0"
             :style="{ color: step === 0 ? '#c0c0bc' : '#8a8a85', cursor: step === 0 ? 'not-allowed' : 'pointer' }"
-            style="background:#252525;border:1px solid #e0e0dc;padding:10px 20px;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif">
+            style="background:#252525;border:1px solid #3a3a3a;color:#737373;padding:10px 20px;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif">
             ← Попередній
           </button>
           <span style="color:#525252;font-size:12px;align-self:center">{{ step + 1 }} / {{ STEPS.length }}</span>
@@ -223,15 +223,15 @@
           </div>
         </div>
         <button v-if="selectedCount > 0" @click="clearAll"
-          style="width:100%;margin-top:16px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#dc2626;padding:8px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif">
+          style="width:100%;margin-top:16px;background:#2a1515;border:1px solid rgba(239,68,68,.3);color:#f87171;padding:8px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif">
           🗑 Очистити все
         </button>
         <button v-if="selectedCount >= 2" @click="showSaveModal = true"
-          style="width:100%;margin-top:10px;background:#f0f0f0,rgba(0,102,204,.15));border:1px solid rgba(232,93,4,.35);color:#e85d04;padding:10px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
+          style="width:100%;margin-top:10px;background:#2a1a10;border:1px solid rgba(232,93,4,.5);color:#e85d04;padding:10px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
           💾 Зберегти збірку
         </button>
         <button v-if="selectedCount >= 2" @click="exportPDF"
-          style="width:100%;margin-top:8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#dc2626;padding:9px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
+          style="width:100%;margin-top:8px;background:#252525;border:1px solid #2e2e2e;color:#737373;padding:9px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
           📄 Експорт PDF
         </button>
       </div>
@@ -263,7 +263,7 @@
           </div>
         </div>
         <div style="display:flex;gap:10px">
-          <button @click="showSaveModal = true; showSummary = false" style="flex:1;background:#f0f0f0,rgba(0,102,204,.15));border:1px solid rgba(232,93,4,.35);color:#e85d04;padding:11px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">💾 Зберегти</button>
+          <button @click="showSaveModal = true; showSummary = false" style="flex:1;background:#2a1a10;border:1px solid rgba(232,93,4,.5);color:#e85d04;padding:11px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">💾 Зберегти</button>
           <button @click="showSummary = false" style="flex:1;background:#e85d04;border:none;color:#fff;padding:11px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif">✓ Готово</button>
         </div>
       </div>
@@ -280,7 +280,7 @@
           <input v-model="saveName" placeholder="Наприклад: Геймінг на 1440p…" maxlength="60" @keydown.enter="confirmSave" @keydown.esc="showSaveModal = false"
             style="width:100%;background:#252525;border:1px solid #2e2e2e;border-radius:10px;padding:12px 14px;font-size:14px;color:#f0f0f0;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;margin-bottom:20px"/>
           <div style="display:flex;gap:10px">
-            <button @click="showSaveModal = false" style="background:#252525;border:1px solid #e0e0dc;color:#737373;padding:12px 20px;border-radius:10px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif">Скасувати</button>
+            <button @click="showSaveModal = false" style="background:#252525;border:1px solid #3a3a3a;color:#737373;padding:12px 20px;border-radius:10px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif">Скасувати</button>
             <button @click="confirmSave" style="flex:1;background:#e85d04;border:none;color:#fff;padding:12px;border-radius:10px;font-size:14px;font-weight:900;cursor:pointer;font-family:'Inter',sans-serif">💾 Зберегти</button>
           </div>
         </div>
@@ -389,9 +389,9 @@
         const isSel = sel.value[cat.value] === item.id;
         const acc   = catData.value?.accent || '#e85d04';
         return {
-          background: isSel ? acc + '12' : '#f2f2f0',
-          border:     isSel ? `2px solid ${acc}88` : '1px solid #e8e8e4',
-          boxShadow:  isSel ? `0 0 24px ${acc}22` : 'none',
+          background: isSel ? '#2a1a10' : '#1e1e1e',
+          border:     isSel ? `2px solid ${acc}` : '1px solid #2e2e2e',
+          boxShadow:  'none',
         };
       }
       function stepStyle(s, i) {
@@ -473,7 +473,7 @@
           .total-val{font-family:'Space Grotesk',Arial,sans-serif;font-size:26px;font-weight:800;color:#e85d04;text-align:right;margin-top:4px}
           .total-label{font-size:11px;color:#737373;text-align:right}
           table{width:100%;border-collapse:collapse;margin-bottom:24px}
-          th{background:#141414;padding:9px 12px;font-size:10px;font-weight:700;text-align:left;border-bottom:2px solid #e4e4e0;letter-spacing:.05em;color:#737373}
+          th{background:#141414;padding:9px 12px;font-size:10px;font-weight:700;text-align:left;border-bottom:2px solid #2e2e2e;letter-spacing:.05em;color:#737373}
           td{padding:10px 12px;font-size:12px;border-bottom:1px solid #f2f2f0;vertical-align:top;color:#f0f0f0}
           .price{font-weight:700;color:#e85d04;text-align:right;white-space:nowrap;font-size:13px}
           .total-row td{font-weight:700;background:#141414;border-top:2px solid #e4e4e0;font-size:13px}
