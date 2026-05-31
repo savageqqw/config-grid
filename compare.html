@@ -12,8 +12,8 @@
     .comp-row:hover { background:#1e1e1e; }
   </style>
 </head>
-<body>
-  <div id="app" style="position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:48px 24px">
+<body style="background:#141414;color:#f0f0f0">
+  <div id="app" v-cloak style="position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:48px 24px">
 
     <div style="margin-bottom:48px">
       <div style="display:inline-flex;padding:4px 14px;border-radius:3px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#f59e0b;font-size:10px;letter-spacing:.06em;font-weight:700;font-family:'Space Grotesk',sans-serif;margin-bottom:14px">ПОРІВНЯННЯ</div>
@@ -25,7 +25,7 @@
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px">
       <div v-for="(slot, i) in slots" :key="i"
         @click="!slot && openSelector(i)"
-        :style="{ background: slot ? '#f2f2f0' : '#f5f5f3', border: slot ? '1px solid rgba(232,93,4,.2)' : '2px dashed #e0e0dc', cursor: slot ? 'default' : 'pointer', position:'relative', overflow:'hidden', borderRadius:'16px', padding:'24px', textAlign:'center', minHeight:'140px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }">
+        :style="{ background: slot ? '#252525' : '#1e1e1e', border: slot ? '1px solid rgba(232,93,4,.35)' : '2px dashed #3a3a3a', cursor: slot ? 'default' : 'pointer', position:'relative', overflow:'hidden', borderRadius:'16px', padding:'24px', textAlign:'center', minHeight:'140px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }">
         <template v-if="slot">
           <div :style="{ background: slot.accent }" style="position:absolute;top:0;left:0;right:0;height:2px"></div>
           <span :style="{ background: (slot.accent||'#e85d04')+'22', border: `1px solid ${slot.accent||'#e85d04'}55`, color: slot.accent||'#e85d04' }"
@@ -41,7 +41,7 @@
         </template>
         <template v-else>
           <div style="font-size:36px;margin-bottom:12px;opacity:.3">+</div>
-          <div style="font-size:13px;color:#525252">Додати компонент</div>
+          <div style="font-size:13px;color:#737373">Додати компонент</div>
           <div style="font-size:11px;color:#e4e4e0;margin-top:4px">Слот {{ i + 1 }}</div>
         </template>
       </div>
@@ -49,8 +49,8 @@
 
     <!-- Таблиця порівняння -->
     <div v-if="filledSlots.length >= 2" style="background:#1e1e1e;border:1px solid #2e2e2e;border-radius:16px;overflow:hidden">
-      <div :style="{ gridTemplateColumns: `200px repeat(${filledSlots.length},1fr)` }" class="comp-row" style="background:rgba(232,93,4,.05);border-bottom:1px solid rgba(232,93,4,.1)">
-        <span style="font-size:10px;color:#525252;font-family:'Space Grotesk',sans-serif;letter-spacing:.04em">ХАРАКТЕРИСТИКА</span>
+      <div :style="{ gridTemplateColumns: `200px repeat(${filledSlots.length},1fr)` }" class="comp-row" style="background:#252525;border-bottom:1px solid rgba(232,93,4,.1)">
+        <span style="font-size:10px;color:#737373;font-family:'Space Grotesk',sans-serif;letter-spacing:.04em">ХАРАКТЕРИСТИКА</span>
         <div v-for="slot in filledSlots" :key="slot.id" style="padding-left:16px;border-left:1px solid #ececea">
           <div style="font-size:12px;font-weight:700;color:#f0f0f0;line-height:1.35">{{ slot.name }}</div>
           <div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:900;color:#e85d04;margin-top:6px">{{ fmt(slot.price) }}</div>
@@ -68,7 +68,7 @@
       </div>
     </div>
 
-    <div v-else style="text-align:center;padding:64px;color:#525252">
+    <div v-else style="text-align:center;padding:64px;color:#737373">
       <div style="font-size:60px;margin-bottom:20px;opacity:.3">⚖️</div>
       <div style="font-family:'Space Grotesk',sans-serif;font-size:16px;margin-bottom:8px">Додайте принаймні 2 компоненти</div>
       <div style="font-size:13px">Натисніть на порожні слоти щоб вибрати компоненти</div>

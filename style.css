@@ -182,3 +182,6 @@ footer .footer-brand {
   font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700;
   color: #525252; margin-bottom: 6px; letter-spacing: .04em;
 }
+
+/* ── V-CLOAK — ховає контент поки Vue не ініціалізується ── */
+[v-cloak] { display: none !important; }

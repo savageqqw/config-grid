@@ -6,8 +6,8 @@
   <title>GRID Config — Каталог збірок</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
-<body>
-  <div id="app" style="position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:48px 24px">
+<body style="background:#141414;color:#f0f0f0">
+  <div id="app" v-cloak style="position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:48px 24px">
 
     <div style="margin-bottom:48px">
       <div style="display:inline-flex;padding:4px 14px;border-radius:3px;background:rgba(232,93,4,.1);border:1px solid rgba(232,93,4,.3);color:#e85d04;font-size:10px;letter-spacing:.06em;font-weight:700;font-family:'Space Grotesk',sans-serif;margin-bottom:14px">КАТАЛОГ</div>
@@ -95,13 +95,13 @@
   <script>
   const { createApp, ref, computed, onMounted } = Vue;
 
-  const PRESETS = [
-    {id:'ultra-gaming',name:'Дорогий геймінг',subtitle:'Максимум для 4K & 60+fps',tag:'Ультра',tagColor:'#ff4444',price:184800,comps:{cpu:'cpu2',gpu:'gpu1',ram:'ram1',motherboard:'mb1',storage:'st1',psu:'psu1',case:'case1',cooling:'cool1'},perf:{gaming:99,streaming:95,rendering:90},use:['4K Gaming 60+fps','Стримінг у 4K','3D-Рендеринг','ML / AI задачі'],icon:'👑',desc:'RTX 5090 + Ryzen 9 7950X3D — абсолютна межа споживчого заліза.'},
-    {id:'pro-gaming',name:'PRO GAMING',subtitle:'Ідеал для 1440p без обмежень',tag:'HIGH',tagColor:'#ff8c00',price:118500,comps:{cpu:'cpu4',gpu:'gpu3',ram:'ram2',motherboard:'mb3',storage:'st3',psu:'psu2',case:'case3',cooling:'cool3'},perf:{gaming:85,streaming:80,rendering:75},use:['1440p Gaming 165fps','Full HD Стримінг','Відеомонтаж'],icon:'🎮',desc:'RTX 4080 Super та i7-14700K — грай без обмежень.'},
-    {id:'workstation',name:'WORKSTATION PRO',subtitle:'Для професійної творчості',tag:'PRO',tagColor:'#8a8a85',price:157500,comps:{cpu:'cpu1',gpu:'gpu2',ram:'ram1',motherboard:'mb2',storage:'st1',psu:'psu1',case:'case2',cooling:'cool2'},perf:{gaming:88,streaming:92,rendering:98},use:['3D Рендеринг / VFX','Машинне навчання','CAD / BIM'],icon:'🏭',desc:'Ryzen 9 7950X + RX 7900 XTX 24GB — для митців та інженерів.'},
-    {id:'streaming',name:'STREAMING PRO',subtitle:'Кращий вибір для стримерів',tag:'STREAM',tagColor:'#ff6b9d',price:91200,comps:{cpu:'cpu3',gpu:'gpu4',ram:'ram2',motherboard:'mb4',storage:'st3',psu:'psu2',case:'case3',cooling:'cool3'},perf:{gaming:75,streaming:98,rendering:70},use:['1080p/1440p Стримінг','YouTube-контент','Подкасти'],icon:'🎙️',desc:'Ryzen 7 7700X + RTX 4070 Ti Super — ідеальний стрим.'},
-    {id:'mid-gaming',name:'MID GAMING',subtitle:'Розумний вибір за кращою ціною',tag:'MID',tagColor:'#e85d04',price:64700,comps:{cpu:'cpu6',gpu:'gpu5',ram:'ram3',motherboard:'mb5',storage:'st5',psu:'psu3',case:'case4',cooling:'cool4'},perf:{gaming:68,streaming:58,rendering:52},use:['1080p Gaming 144fps','Базовий стримінг','Навчання'],icon:'⚡',desc:'RX 7800 XT + i5-14600K — найкраще поєднання ціна/якість.'},
-    {id:'budget',name:'BUDGET BUILD',subtitle:'Максимум за мінімум коштів',tag:'BUDGET',tagColor:'#22c55e',price:32500,comps:{cpu:'cpu7',gpu:'gpu7',ram:'ram4',motherboard:'mb6',storage:'st5',psu:'psu4',case:'case5',cooling:'cool5'},perf:{gaming:46,streaming:34,rendering:28},use:['1080p Gaming','Офісні задачі','Навчання'],icon:'💡',desc:'Найдоступніше рішення для входу у PC-гейминг.'},
+  const PRESETS_RAW = [
+    {id:'ultra-gaming',name:'Дорогий геймінг',subtitle:'Максимум для 4K & 60+fps',tag:'Ультра',tagColor:'#ff4444',comps:{cpu:'cpu2',gpu:'gpu1',ram:'ram1',motherboard:'mb1',storage:'st1',psu:'psu1',case:'case1',cooling:'cool1'},perf:{gaming:99,streaming:95,rendering:90},use:['4K Gaming 60+fps','Стримінг у 4K','3D-Рендеринг','ML / AI задачі'],icon:'👑',desc:'RTX 5090 + Ryzen 9 7950X3D — абсолютна межа споживчого заліза.'},
+    {id:'pro-gaming',name:'PRO GAMING',subtitle:'Ідеал для 1440p без обмежень',tag:'HIGH',tagColor:'#ff8c00',comps:{cpu:'cpu4',gpu:'gpu3',ram:'ram2',motherboard:'mb3',storage:'st3',psu:'psu2',case:'case3',cooling:'cool3'},perf:{gaming:85,streaming:80,rendering:75},use:['1440p Gaming 165fps','Full HD Стримінг','Відеомонтаж'],icon:'🎮',desc:'RTX 4080 Super та i7-14700K — грай без обмежень.'},
+    {id:'workstation',name:'WORKSTATION PRO',subtitle:'Для професійної творчості',tag:'PRO',tagColor:'#8a8a85',comps:{cpu:'cpu1',gpu:'gpu2',ram:'ram1',motherboard:'mb2',storage:'st1',psu:'psu1',case:'case2',cooling:'cool2'},perf:{gaming:88,streaming:92,rendering:98},use:['3D Рендеринг / VFX','Машинне навчання','CAD / BIM'],icon:'🏭',desc:'Ryzen 9 7950X + RX 7900 XTX 24GB — для митців та інженерів.'},
+    {id:'streaming',name:'STREAMING PRO',subtitle:'Кращий вибір для стримерів',tag:'STREAM',tagColor:'#ff6b9d',comps:{cpu:'cpu3',gpu:'gpu4',ram:'ram2',motherboard:'mb4',storage:'st3',psu:'psu2',case:'case3',cooling:'cool3'},perf:{gaming:75,streaming:98,rendering:70},use:['1080p/1440p Стримінг','YouTube-контент','Подкасти'],icon:'🎙️',desc:'Ryzen 7 7700X + RTX 4070 Ti Super — ідеальний стрим.'},
+    {id:'mid-gaming',name:'MID GAMING',subtitle:'Розумний вибір за кращою ціною',tag:'MID',tagColor:'#e85d04',comps:{cpu:'cpu6',gpu:'gpu5',ram:'ram3',motherboard:'mb5',storage:'st5',psu:'psu3',case:'case4',cooling:'cool4'},perf:{gaming:68,streaming:58,rendering:52},use:['1080p Gaming 144fps','Базовий стримінг','Навчання'],icon:'⚡',desc:'RX 7800 XT + i5-14600K — найкраще поєднання ціна/якість.'},
+    {id:'budget',name:'BUDGET BUILD',subtitle:'Максимум за мінімум коштів',tag:'BUDGET',tagColor:'#22c55e',comps:{cpu:'cpu7',gpu:'gpu7',ram:'ram4',motherboard:'mb6',storage:'st5',psu:'psu4',case:'case5',cooling:'cool5'},perf:{gaming:46,streaming:34,rendering:28},use:['1080p Gaming','Офісні задачі','Навчання'],icon:'💡',desc:'Найдоступніше рішення для входу у PC-гейминг.'},
   ];
   const CAT_MAP = {'ultra-gaming':'gaming','pro-gaming':'gaming','streaming':'gaming','workstation':'workstation','mid-gaming':'gaming','budget':'budget'};
 
@@ -115,8 +115,17 @@
         { key:'workstation', label:'Робочі станції' },
         { key:'budget',      label:'Бюджетні' },
       ];
+      // Рахуємо реальну ціну кожного пресету з компонентів
+      const PRESETS = computed(() => PRESETS_RAW.map(p => ({
+        ...p,
+        price: Object.entries(p.comps).reduce((sum, [cat, id]) => {
+          const item = CD.value[cat]?.items?.find(i => i.id === id);
+          return sum + (item ? priceNum(item.price) : 0);
+        }, 0)
+      })));
+
       const filtered = computed(() =>
-        filter.value === 'all' ? PRESETS : PRESETS.filter(p => CAT_MAP[p.id] === filter.value)
+        filter.value === 'all' ? PRESETS.value : PRESETS.value.filter(p => CAT_MAP[p.id] === filter.value)
       );
 
       function fmt(v) { const {num,approx} = parsePrice(v); return (approx?'~':'')+Math.round(num).toLocaleString('uk-UA')+'\u00a0₴'; }

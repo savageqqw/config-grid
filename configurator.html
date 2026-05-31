@@ -14,8 +14,8 @@
     .thumb:active { cursor:grabbing; box-shadow:0 0 16px rgba(232,93,4,.9); }
   </style>
 </head>
-<body>
-  <div id="app" style="position:relative;z-index:1">
+<body style="background:#141414;color:#f0f0f0">
+  <div id="app" v-cloak style="position:relative;z-index:1">
     <div v-if="!cdLoaded" style="display:flex;align-items:center;justify-content:center;height:60vh;flex-direction:column;gap:16px">
       <div style="font-size:40px;animation:spin 1s linear infinite">⚙️</div>
       <div style="font-family:'Space Grotesk',sans-serif;font-size:14px;color:#737373">Завантаження компонентів...</div>
@@ -81,7 +81,7 @@
           <!-- Dual slider -->
           <div ref="sliderRef" style="position:relative;height:28px;margin:0 8px 8px;cursor:pointer">
             <div style="position:absolute;top:50%;left:0;right:0;height:5px;background:#e0e0dc;border-radius:5px;transform:translateY(-50%)"></div>
-            <div :style="trackStyle" style="position:absolute;top:50%;height:5px;background:#f0f0f0;border-radius:5px;transform:translateY(-50%);pointer-events:none"></div>
+            <div :style="trackStyle" style="position:absolute;top:50%;height:5px;background:#e85d04;border-radius:5px;transform:translateY(-50%);pointer-events:none"></div>
             <div class="thumb" :style="{ left: minPct + '%' }" @mousedown="startDrag('min', $event)" @touchstart.prevent="startDrag('min', $event)"></div>
             <div class="thumb" :style="{ left: maxPct + '%' }" @mousedown="startDrag('max', $event)" @touchstart.prevent="startDrag('max', $event)"></div>
           </div>
@@ -175,11 +175,11 @@
           </button>
           <span style="color:#525252;font-size:12px;align-self:center">{{ step + 1 }} / {{ STEPS.length }}</span>
           <button v-if="step < STEPS.length - 1" @click="step++"
-            style="background:#f0f0f0;border:none;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
+            style="background:#e85d04;border:none;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
             Наступний →
           </button>
           <button v-else @click="showSummary = true"
-            style="background:#f0f0f0;border:none;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
+            style="background:#e85d04;border:none;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
             ✓ Завершити збірку
           </button>
         </div>
@@ -195,7 +195,7 @@
         <div v-if="totalPerf > 0" style="background:rgba(17,17,16,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:16px;margin-bottom:16px">
           <div style="font-size:11px;color:#737373;margin-bottom:10px">ПРОДУКТИВНІСТЬ</div>
           <div style="text-align:center;margin-bottom:10px">
-            <div style="font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:900;background:#f0f0f0;-webkit-background-clip:text;-webkit-text-fill-color:transparent">{{ totalPerf }}</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:900;background:#e85d04;-webkit-background-clip:text;-webkit-text-fill-color:transparent">{{ totalPerf }}</div>
             <div style="font-size:10px;color:#737373">з 100 балів</div>
           </div>
           <div v-for="bar in perfBars" :key="bar.label" style="margin-bottom:8px">
@@ -264,7 +264,7 @@
         </div>
         <div style="display:flex;gap:10px">
           <button @click="showSaveModal = true; showSummary = false" style="flex:1;background:#f0f0f0,rgba(0,102,204,.15));border:1px solid rgba(232,93,4,.35);color:#e85d04;padding:11px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">💾 Зберегти</button>
-          <button @click="showSummary = false" style="flex:1;background:#f0f0f0;border:none;color:#fff;padding:11px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif">✓ Готово</button>
+          <button @click="showSummary = false" style="flex:1;background:#e85d04;border:none;color:#fff;padding:11px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif">✓ Готово</button>
         </div>
       </div>
     </div>
@@ -281,7 +281,7 @@
             style="width:100%;background:#252525;border:1px solid #2e2e2e;border-radius:10px;padding:12px 14px;font-size:14px;color:#f0f0f0;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;margin-bottom:20px"/>
           <div style="display:flex;gap:10px">
             <button @click="showSaveModal = false" style="background:#252525;border:1px solid #e0e0dc;color:#737373;padding:12px 20px;border-radius:10px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif">Скасувати</button>
-            <button @click="confirmSave" style="flex:1;background:#f0f0f0;border:none;color:#fff;padding:12px;border-radius:10px;font-size:14px;font-weight:900;cursor:pointer;font-family:'Inter',sans-serif">💾 Зберегти</button>
+            <button @click="confirmSave" style="flex:1;background:#e85d04;border:none;color:#fff;padding:12px;border-radius:10px;font-size:14px;font-weight:900;cursor:pointer;font-family:'Inter',sans-serif">💾 Зберегти</button>
           </div>
         </div>
       </div>
@@ -467,7 +467,7 @@
           body{font-family:'Inter',Arial,sans-serif;background:#1e1e1e;color:#f0f0f0;padding:36px;max-width:820px;margin:0 auto;font-size:13px}
           .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid #f0f0f0}
           .logo-box{display:flex;align-items:center;gap:10px}
-          .logo-icon{width:36px;height:36px;background:#f0f0f0;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0}
+          .logo-icon{width:36px;height:36px;background:#e85d04;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0}
           .logo-name{font-family:'Space Grotesk',Arial,sans-serif;font-size:22px;font-weight:800;color:#f0f0f0;letter-spacing:-.01em}
           .logo-sub{font-size:10px;color:#737373;letter-spacing:.06em;margin-top:2px}
           .total-val{font-family:'Space Grotesk',Arial,sans-serif;font-size:26px;font-weight:800;color:#e85d04;text-align:right;margin-top:4px}
@@ -482,7 +482,7 @@
           .specs-cell{color:#737373;font-size:11px;line-height:1.5}
           .footer{margin-top:20px;padding-top:14px;border-top:1px solid #e4e4e0;font-size:11px;color:#aaa;display:flex;justify-content:space-between}
         </style></head>
-        <body>
+        <body style="background:#141414;color:#f0f0f0">
           <div class="header">
             <div class="logo-box">
               <div class="logo-icon">⚙</div>
