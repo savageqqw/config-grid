@@ -514,7 +514,7 @@
         sel.value = { ...sel.value, [c]: sel.value[c] === id ? null : id };
         saveSel();
       }
-      function setStep(i) { step.value = i; search.value = ''; tier.value = 'all'; }
+      function setStep(i) { step.value = i; search.value = ''; tier.value = 'all'; budgetMin.value = 0; budgetMax.value = 999999; }
       function clearAll()  { sel.value = { ...defaultSel() }; saveSel(); }
       function resetBudget() { budgetMin.value = 0; budgetMax.value = 999999; }
       function setBudgetPreset(mn, mx) { budgetMin.value = mn; budgetMax.value = mx; }
