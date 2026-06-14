@@ -185,3 +185,126 @@ footer .footer-brand {
 
 /* ── V-CLOAK — ховає контент поки Vue не ініціалізується ── */
 [v-cloak] { display: none !important; }
+
+/* ── MOBILE RESPONSIVE ──────────────────────────────────── */
+
+/* Navbar mobile */
+@media (max-width: 768px) {
+  .navbar-inner {
+    padding: 0 16px;
+    height: 54px;
+    gap: 8px;
+  }
+  .navbar-logo-name { font-size: 13px; }
+
+  /* Hide nav links on mobile — burger menu handles them */
+  .navbar-links { display: none; }
+  .navbar-links.open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 54px;
+    left: 0; right: 0;
+    background: rgba(20,20,20,.98);
+    border-bottom: 1px solid #2e2e2e;
+    padding: 12px 16px 20px;
+    gap: 4px;
+    z-index: 999;
+    backdrop-filter: blur(16px);
+  }
+  .navbar-links.open button {
+    width: 100%;
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  /* Configurator — stack vertically */
+  .configurator-layout {
+    flex-direction: column;
+    min-height: unset;
+  }
+  .configurator-steps {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #2e2e2e;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .configurator-steps::-webkit-scrollbar { display: none; }
+  .configurator-steps > div:last-child { display: none; } /* hide selected counter on mobile — shown in summary */
+  .configurator-center {
+    padding: 16px;
+  }
+  .configurator-summary {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #2e2e2e;
+    padding: 16px;
+  }
+
+  /* Catalog grid */
+  .catalog-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Compare slots */
+  .compare-slots {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Index hero */
+  .hero-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Stats grid */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Features grid */
+  .features-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Modals */
+  .modal-box {
+    padding: 20px 16px;
+    border-radius: 12px;
+  }
+
+  /* Summary modal export buttons */
+  .summary-export-btns {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Search input full width on mobile */
+  .search-input {
+    width: 100% !important;
+  }
+
+  /* Configurator header wrap */
+  .configurator-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  /* Build actions full width */
+  .build-actions {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-inner { padding: 0 12px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .comp-card-actions { flex-direction: column; gap: 6px; }
+}

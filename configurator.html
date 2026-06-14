@@ -12,6 +12,70 @@
     .spec-row:last-child { border-bottom: none; }
     .thumb { position:absolute; top:50%; width:18px; height:18px; border-radius:50%; background:#e85d04; border:3px solid #0a0a14; transform:translate(-50%,-50%); cursor:grab; box-shadow:0 0 8px rgba(232,93,4,.6); transition:box-shadow .15s; z-index:3; }
     .thumb:active { cursor:grabbing; box-shadow:0 0 16px rgba(232,93,4,.9); }
+
+    @media (max-width: 768px) {
+      .configurator-layout { flex-direction: column; }
+
+      /* Steps — horizontal pill-scroll */
+      .configurator-steps {
+        width: 100% !important;
+        border-right: none !important;
+        border-bottom: 1px solid #2e2e2e;
+        padding: 10px 12px !important;
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 6px;
+        overflow-x: auto;
+        overflow-y: visible;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        background: #1a1a1a;
+      }
+      .configurator-steps::-webkit-scrollbar { display: none; }
+      .steps-label { display: none !important; }
+      /* Each step item becomes a compact pill */
+      .step-item {
+        flex-shrink: 0 !important;
+        border-radius: 20px !important;
+        padding: 6px 12px !important;
+        min-width: unset !important;
+      }
+      .step-item .step-name-detail { display: none; }
+
+      /* Center panel */
+      .configurator-center { padding: 14px 12px; order: 2; }
+
+      /* Summary sidebar goes below */
+      .configurator-summary {
+        width: 100% !important;
+        border-left: none !important;
+        border-top: 1px solid #2e2e2e;
+        padding: 16px 12px !important;
+        order: 3;
+      }
+
+      /* Header */
+      .conf-header { flex-direction: column; align-items: flex-start !important; gap: 10px; }
+      .conf-header .search-input { width: 100% !important; }
+
+      /* Items grid — 1 col on phone, 2 on tablet */
+      .items-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important; gap: 10px !important; }
+
+      /* Card image smaller */
+      .comp-img-wrap { height: 130px !important; }
+
+      /* Export buttons in summary modal */
+      .export-btns { grid-template-columns: 1fr 1fr !important; }
+
+      /* Nav buttons */
+      .conf-nav-btns { flex-wrap: wrap; gap: 8px; }
+      .conf-nav-btns > * { flex: 1; min-width: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      .items-grid { grid-template-columns: 1fr !important; }
+      .comp-img-wrap { height: 160px !important; }
+    }
   </style>
 </head>
 <body style="background:#141414;color:#f0f0f0">
@@ -24,7 +88,7 @@
     <div v-else class="configurator-layout">
       <!-- STEPS -->
       <div class="configurator-steps">
-        <div style="font-family:'Space Grotesk',sans-serif;font-size:10px;color:#525252;letter-spacing:.06em;margin-bottom:16px;padding:0 8px">КОМПОНЕНТИ</div>
+        <div class="steps-label" style="font-family:'Space Grotesk',sans-serif;font-size:10px;color:#525252;letter-spacing:.06em;margin-bottom:16px;padding:0 8px">КОМПОНЕНТИ</div>
         <div v-for="(s, i) in STEPS" :key="s"
           class="step-item"
           :style="stepStyle(s, i)"
@@ -105,6 +169,36 @@
             style="padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;letter-spacing:.06em;font-weight:700;transition:all .2s">
             {{ t.label }}
           </button>
+        </div>
+
+        <!-- RAM compat hint -->
+        <div v-if="cat === 'ram' && requiredRamType"
+          style="display:flex;align-items:center;gap:10px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:10px 14px;margin-bottom:16px">
+          <span style="font-size:18px">✅</span>
+          <div>
+            <span style="font-size:12px;font-weight:700;color:#22c55e">Фільтр сумісності увімкнено — </span>
+            <span style="font-size:12px;color:#737373">показано тільки <strong style="color:#f0f0f0">{{ requiredRamType }}</strong> (вимагає {{ selectedMb ? selectedMb.name.split(' ').slice(0,3).join(' ') : selectedCpu.name.split(' ').slice(0,3).join(' ') }})</span>
+          </div>
+        </div>
+        <div v-if="cat === 'ram' && !requiredRamType"
+          style="display:flex;align-items:center;gap:10px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:10px 14px;margin-bottom:16px">
+          <span style="font-size:18px">💡</span>
+          <span style="font-size:12px;color:#737373">Спочатку оберіть <strong style="color:#f59e0b">CPU або материнську плату</strong> — тоді побачите тільки сумісну пам'ять</span>
+        </div>
+
+        <!-- Motherboard compat hint -->
+        <div v-if="cat === 'motherboard' && selectedCpu"
+          style="display:flex;align-items:center;gap:10px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:10px 14px;margin-bottom:16px">
+          <span style="font-size:18px">✅</span>
+          <div>
+            <span style="font-size:12px;font-weight:700;color:#22c55e">Фільтр сумісності увімкнено — </span>
+            <span style="font-size:12px;color:#737373">показано тільки плати під <strong style="color:#f0f0f0">{{ selectedCpu.socket }}</strong> з підтримкою <strong style="color:#f0f0f0">{{ selectedCpu.ram_type }}</strong></span>
+          </div>
+        </div>
+        <div v-if="cat === 'motherboard' && !selectedCpu"
+          style="display:flex;align-items:center;gap:10px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:10px 14px;margin-bottom:16px">
+          <span style="font-size:18px">💡</span>
+          <span style="font-size:12px;color:#737373">Спочатку оберіть <strong style="color:#f59e0b">CPU</strong> — тоді побачите тільки сумісні материнські плати</span>
         </div>
 
         <!-- Items grid -->
@@ -356,13 +450,24 @@
       const trackStyle = computed(() => ({ left: minPct.value + '%', right: (100 - maxPct.value) + '%' }));
 
       const selectedCpu   = computed(() => findComp('cpu', sel.value.cpu));
+      const selectedMb    = computed(() => findComp('motherboard', sel.value.motherboard));
+
+      // Визначаємо потрібний тип RAM з CPU або материнки
+      const requiredRamType = computed(() => {
+        if (selectedMb.value?.ram_type) return selectedMb.value.ram_type;
+        if (selectedCpu.value?.ram_type) return selectedCpu.value.ram_type;
+        return null;
+      });
+
       const filteredItems = computed(() => catItems.value.filter(it => {
         const priceUah = priceNum(it.price);
         const tierOk   = tier.value === 'all' || it.tier === tier.value;
         const searchOk = it.name.toLowerCase().includes(search.value.toLowerCase());
         const socketOk = cat.value === 'motherboard' && selectedCpu.value ? it.socket === selectedCpu.value.socket : true;
+        const mbRamOk  = cat.value === 'motherboard' && selectedCpu.value ? it.ram_type === selectedCpu.value.ram_type : true;
+        const ramOk    = cat.value === 'ram' && requiredRamType.value ? it.ram_type === requiredRamType.value : true;
         const budgetOk = priceUah >= budgetMin.value && priceUah <= budgetMax.value;
-        return tierOk && searchOk && socketOk && budgetOk;
+        return tierOk && searchOk && socketOk && mbRamOk && ramOk && budgetOk;
       }));
 
       const totalPrice  = computed(() => calcPrice(sel.value));
@@ -552,7 +657,7 @@
         CD, cdLoaded, STEPS, TIER_UA,
         step, search, tier, tiers, sel,
         cat, catData, catPriceMin, catPriceMax,
-        filteredItems, totalPrice, totalPerf, compat, selectedCount, perfBars,
+        filteredItems, requiredRamType, selectedMb, totalPrice, totalPerf, compat, selectedCount, perfBars,
         budgetMin, budgetMax, budgetPresets, minPct, maxPct, trackStyle, sliderRef,
         showSummary, showSaveModal, saveName, copied,
         fmt, tierColor, cardStyle, stepStyle, findComp, getSpecsFull,

@@ -27,6 +27,41 @@
     .nav-btn.active { background: rgba(232,93,4,.1); border-color: rgba(232,93,4,.3); color: #e85d04; }
     .nav-btn:hover:not(.active) { color: #e85d04; }
     .nav-dot { position: absolute; top: -2px; right: -2px; width: 7px; height: 7px; border-radius: 50%; background: #e85d04; }
+
+    /* Hamburger */
+    .burger-btn {
+      display: none;
+      background: transparent; border: 1px solid #2e2e2e;
+      border-radius: 7px; padding: 6px 9px; cursor: pointer;
+      color: #8a8a85; font-size: 18px; line-height: 1;
+      transition: all .2s;
+    }
+    .burger-btn:hover { border-color: #e85d04; color: #e85d04; }
+    @media (max-width: 768px) {
+      .burger-btn { display: flex; align-items: center; justify-content: center; }
+      .navbar-links { display: none !important; }
+      .navbar-links.open {
+        display: flex !important;
+        flex-direction: column;
+        position: fixed;
+        top: 54px; left: 0; right: 0;
+        background: rgba(20,20,20,.98);
+        border-bottom: 1px solid #2e2e2e;
+        padding: 10px 16px 18px;
+        gap: 4px;
+        z-index: 999;
+        backdrop-filter: blur(16px);
+        animation: fadeIn .15s ease;
+      }
+      .navbar-links.open button {
+        width: 100%; text-align: left;
+        padding: 11px 14px; font-size: 14px;
+        border-radius: 8px;
+      }
+      /* Compact user area on mobile */
+      .nav-user-name { display: none; }
+      .nav-admin-btn { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -47,41 +82,46 @@
           </div>
 
           <!-- Посилання -->
-          <div class="navbar-links">
+          <div class="navbar-links" :class="{ open: menuOpen }">
             <button v-for="p in pages" :key="p.key"
               class="nav-btn" :class="{ active: activePage === p.key }"
-              @click="navigate(p.key)">
+              @click="navigate(p.key); menuOpen = false">
               {{ p.label }}
               <span v-if="p.key === 'mybuilds' && buildsCount > 0" class="nav-dot"></span>
             </button>
           </div>
 
           <!-- Права частина -->
-          <div style="display:flex;align-items:center;gap:10px">
+          <div style="display:flex;align-items:center;gap:8px">
 
             <!-- Юзер -->
             <template v-if="user">
-              <button v-if="user.isAdmin" @click="navigate('admin')"
+              <button v-if="user.isAdmin" @click="navigate('admin')" class="nav-admin-btn"
                 style="display:flex;align-items:center;gap:5px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#f59e0b;padding:5px 12px;border-radius:7px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer">
                 Керування ⚙️
               </button>
-              <div style="display:flex;align-items:center;gap:8px;background:#252525;border:1px solid #2e2e2e;border-radius:8px;padding:5px 12px">
-                <div style="width:26px;height:26px;border-radius:50%;background:#e85d04;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff">
+              <div style="display:flex;align-items:center;gap:8px;background:#252525;border:1px solid #2e2e2e;border-radius:8px;padding:5px 10px">
+                <div style="width:26px;height:26px;border-radius:50%;background:#e85d04;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;flex-shrink:0">
                   {{ user.name.charAt(0).toUpperCase() }}
                 </div>
-                <span style="font-size:12px;color:#f0f0f0;font-family:'Inter',sans-serif;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ user.name }}</span>
+                <span class="nav-user-name" style="font-size:12px;color:#f0f0f0;font-family:'Inter',sans-serif;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ user.name }}</span>
               </div>
               <button @click="logout"
-                style="background:#2a1515;border:1px solid rgba(239,68,68,.3);color:#f87171;padding:5px 12px;border-radius:7px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer">
+                style="background:#2a1515;border:1px solid rgba(239,68,68,.3);color:#f87171;padding:5px 10px;border-radius:7px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer">
                 Вийти
               </button>
             </template>
             <template v-else>
               <button @click="navigate('auth')"
-                style="background:#e85d04;border:none;color:#fff;padding:7px 18px;border-radius:8px;font-size:13px;font-weight:800;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:.03em">
+                style="background:#e85d04;border:none;color:#fff;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:800;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:.03em">
                 Увійти
               </button>
             </template>
+            <!-- Burger -->
+            <button class="burger-btn" @click="menuOpen = !menuOpen" :aria-label="menuOpen ? 'Закрити меню' : 'Відкрити меню'">
+              <span v-if="!menuOpen">☰</span>
+              <span v-else>✕</span>
+            </button>
           </div>
         </div>
       </nav>
@@ -114,7 +154,7 @@
     setup() {
       const activePage  = ref('index');
       const currentFile = ref('index.html');
-
+      const menuOpen    = ref(false);
 
       const user        = ref(PCForgeStore.user);
       const buildsCount = computed(() => PCForgeStore.builds.length);
@@ -241,7 +281,7 @@
         // Завантажуємо компоненти
       });
 
-      return { pages: PAGES, activePage, currentFile, user, buildsCount, refreshUser, navigate, logout };
+      return { pages: PAGES, activePage, currentFile, menuOpen, user, buildsCount, refreshUser, navigate, logout };
     }
   }).mount('#shell-wrap');
   </script>
