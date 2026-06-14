@@ -172,34 +172,41 @@
         </div>
 
         <!-- RAM compat hint -->
-        <div v-if="cat === 'ram' && requiredRamType"
-          style="display:flex;align-items:center;gap:10px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:10px 14px;margin-bottom:16px">
-          <span style="font-size:18px">✅</span>
-          <div>
-            <span style="font-size:12px;font-weight:700;color:#22c55e">Фільтр сумісності увімкнено — </span>
-            <span style="font-size:12px;color:#737373">показано тільки <strong style="color:#f0f0f0">{{ requiredRamType }}</strong> (вимагає {{ selectedMb ? selectedMb.name.split(' ').slice(0,3).join(' ') : selectedCpu.name.split(' ').slice(0,3).join(' ') }})</span>
+        <template v-if="cat === 'ram'">
+          <div v-if="requiredRamType"
+            style="display:flex;align-items:center;gap:10px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:10px 14px;margin-bottom:16px">
+            <span style="font-size:18px">✅</span>
+            <div>
+              <span style="font-size:12px;font-weight:700;color:#22c55e">Фільтр сумісності увімкнено — </span>
+              <span style="font-size:12px;color:#737373">показано тільки <strong style="color:#f0f0f0">{{ requiredRamType }}</strong>
+                <template v-if="selectedMb"> (вимагає {{ selectedMb.name.split(' ').slice(0,3).join(' ') }})</template>
+                <template v-else-if="selectedCpu"> (вимагає {{ selectedCpu.name.split(' ').slice(0,3).join(' ') }})</template>
+              </span>
+            </div>
           </div>
-        </div>
-        <div v-if="cat === 'ram' && !requiredRamType"
-          style="display:flex;align-items:center;gap:10px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:10px 14px;margin-bottom:16px">
-          <span style="font-size:18px">💡</span>
-          <span style="font-size:12px;color:#737373">Спочатку оберіть <strong style="color:#f59e0b">CPU або материнську плату</strong> — тоді побачите тільки сумісну пам'ять</span>
-        </div>
+          <div v-else
+            style="display:flex;align-items:center;gap:10px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:10px 14px;margin-bottom:16px">
+            <span style="font-size:18px">💡</span>
+            <span style="font-size:12px;color:#737373">Спочатку оберіть <strong style="color:#f59e0b">CPU або материнську плату</strong> — тоді побачите тільки сумісну пам'ять</span>
+          </div>
+        </template>
 
         <!-- Motherboard compat hint -->
-        <div v-if="cat === 'motherboard' && selectedCpu"
-          style="display:flex;align-items:center;gap:10px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:10px 14px;margin-bottom:16px">
-          <span style="font-size:18px">✅</span>
-          <div>
-            <span style="font-size:12px;font-weight:700;color:#22c55e">Фільтр сумісності увімкнено — </span>
-            <span style="font-size:12px;color:#737373">показано тільки плати під <strong style="color:#f0f0f0">{{ selectedCpu.socket }}</strong> з підтримкою <strong style="color:#f0f0f0">{{ selectedCpu.ram_type }}</strong></span>
+        <template v-if="cat === 'motherboard'">
+          <div v-if="selectedCpu"
+            style="display:flex;align-items:center;gap:10px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:10px 14px;margin-bottom:16px">
+            <span style="font-size:18px">✅</span>
+            <div>
+              <span style="font-size:12px;font-weight:700;color:#22c55e">Фільтр сумісності увімкнено — </span>
+              <span style="font-size:12px;color:#737373">показано тільки плати під <strong style="color:#f0f0f0">{{ selectedCpu.socket }}</strong> з підтримкою <strong style="color:#f0f0f0">{{ selectedCpu.ram_type }}</strong></span>
+            </div>
           </div>
-        </div>
-        <div v-if="cat === 'motherboard' && !selectedCpu"
-          style="display:flex;align-items:center;gap:10px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:10px 14px;margin-bottom:16px">
-          <span style="font-size:18px">💡</span>
-          <span style="font-size:12px;color:#737373">Спочатку оберіть <strong style="color:#f59e0b">CPU</strong> — тоді побачите тільки сумісні материнські плати</span>
-        </div>
+          <div v-else
+            style="display:flex;align-items:center;gap:10px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:10px 14px;margin-bottom:16px">
+            <span style="font-size:18px">💡</span>
+            <span style="font-size:12px;color:#737373">Спочатку оберіть <strong style="color:#f59e0b">CPU</strong> — тоді побачите тільки сумісні материнські плати</span>
+          </div>
+        </template>
 
         <!-- Items grid -->
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px">
